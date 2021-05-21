@@ -1,0 +1,318 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport"
+    content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+  <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+  <title>首页</title>
+  <script type="text/javascript" src="../script/flexible.js"></script>
+  <link rel="stylesheet" type="text/css" href="../css/api.css" />
+  <link rel="stylesheet" type="text/css" href="../css/main.css" />
+  <link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+</head>
+
+<body>
+  <div class="home" id="app"  v-cloak style="margin-top:20px;">
+      <div class='top' @click='returns'>
+          <img src='../image/icon_13.png'>
+          <div>VIP</div>
+      </div>
+      <div class="week">
+        <div class="week_top"  @click='gengd("主编推荐",1,mains,"pai2 desc","")'>
+          <div>主编推荐</div>
+          <div>更多</div>
+        </div>
+        <div class="week_bot">
+          <div  v-for='(items,index) in homen' :key='index'  @click="details(items.id)">
+            <img  :src="items.image"/>
+            <div>{{items.title}}</div>
+          </div>
+        </div>
+      </div>
+      <div class="heightss"></div>
+      <div class="week">
+        <div class="week_top"  @click='gengd("新书推荐",2,mains,"pai2 desc","")'>
+          <div>新书推荐</div>
+          <div>更多</div>
+        </div>
+        <div class="week_bot">
+          <div v-for='(items,index) in homens' :key='index'  @click="details(items.id)">
+            <img :src="items.image"/>
+            <div>{{items.title}}</div>
+          </div>
+        </div>
+      </div>
+      <div class="heightss"></div>
+      <div class="jingp">
+        <div class="week_top"  @click='gengd("精品推荐",3,mains,"pai4 desc","")'>
+          <div>精品推荐</div>
+          <div>更多</div>
+        </div>
+        <div class="jing_bot"   v-for='(items,index) in Arrivals2' :key='index'  @click="details(items.id)">
+          <img :src="items.image">
+          <div>
+            <div>{{items.title}}</div>
+            <div>{{items.desc}}</div>
+            <div>{{items.tstype}}</div>
+          </div>
+        </div>
+      </div>
+      <div class="heightss"></div>
+      <div class="week">
+        <div class="week_top" @click="homes5()">
+          <div>猜你喜欢</div>
+          <div>换一批</div>
+        </div>
+        <div class="week_bot">
+          <div  v-for='(items,index) in Arrivals55' :key='index'  @click="details(items.id)">
+            <img  :src="items.image"/>
+            <div>{{items.title}}</div>
+          </div>
+        </div>
+      </div>
+      <div class="heightss"></div>
+      <div class="weeks">
+        <div class="week_top"  @click='gengd("限时免费",4,mains,"pai4 desc","")'>
+          <div>限时免费</div>
+          <div>更多</div>
+        </div>
+        <div class="week_bots">
+          <div   v-for='(items,index) in Arrivals3' :key='index'  @click="details(items.id)">
+            <img  :src="items.image"/>
+            <div>{{items.title}}</div>
+          </div>
+        </div>
+      </div>
+      <div class="heightss"></div>
+      <div class="week">
+        <div class="week_top"  @click='gengd("畅销书单",5,mains,"pai4 desc","")'>
+          <div>畅销书单</div>
+          <div>更多</div>
+        </div>
+        <div class="chang">
+          <div  v-for='(items,index) in tjchuan55s' :key='index'  @click="details(items.id)">
+            <span>【{{items.tstype}}】</span>
+            <span>{{items.title}}</span>
+          </div>
+        </div>
+      </div>
+  </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/jquery-3.2.0.min.js"></script>
+<script type="text/javascript" src="../script/vue.min.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript" src="../script/swiper.min.js"></script>
+<script type="text/javascript">
+  apiready = function () {
+    app = new Vue({
+      el: '#app',
+      data: {
+          mains:2,
+          nns:0,//换一批
+          Gender2:[],//轮播图
+          homen:[],//主编推荐
+          homens:[],//新书推荐
+          Arrivals2:[],//精品推荐
+          Arrivals55:[],//猜你喜欢
+          Arrivals3:[],//限时免费
+          tjchuan55s:[],//畅销书单
+
+      },
+      created: function () {
+          that = this
+      },
+      mounted: function () {
+          that.lun('female');//轮播图
+          that.homes(1,'female');//主编推荐
+          that.homes1(2,'female');//新书推荐
+          that.homes2(3,'female');//精品推荐
+          that.homes5('female');//猜你喜欢
+          that.homes44('female');//限时免费
+          that.tjchuan5ns("female");//畅销书单
+      },
+      methods: {
+        returns(){
+          api.historyBack({
+              frameName: 'detail'
+          }, function(ret, err) {
+                  api.closeWin();
+          });
+        },
+        // 点击跳转详情页
+  			details(ids){
+          api.openWin({
+            name: 'details',
+            url: 'details.html',
+            pageParam: {
+                id: ids,
+                lon:api.pageParam.lon==undefined?"":api.pageParam.lon.openid
+            }
+          });
+  			},
+        Ranking(name,tj,start,gender,xstype,isfree){
+          api.openWin({
+            name: 'Navigation',
+            url: 'Navigation.html',
+            pageParam: {
+              name:name,
+              tj:tj,
+              start: start,
+              gender:gender,
+              xstype:xstype,
+              isfree:isfree,
+              lon:api.pageParam.lon==undefined?"":api.pageParam.lon.openid
+            }
+          });
+        },
+        gengd(name,tj,gender,order,mianf){
+          console.log(gender)
+
+          api.openWin({
+            name: 'Navigations',
+            url: './Navigations.html',
+            pageParam: {
+              name:name,
+              tj:tj,
+              gender:gender,
+              order:order,
+              mianf:mianf,
+              lon:api.pageParam.lon==undefined?"":api.pageParam.lon.openid
+            }
+          });
+        },
+          // 限时免费
+          tjchuan5ns(females){
+            $api.post(
+              $config.Editor, {
+                 tj:4,
+                 limit:6,
+                 gender: females,
+                 isfree:1,
+                  order:"pai6 desc"
+              },
+              function(res) {
+                  //console.log(JSON.stringify(res),"畅销书单")
+                  that.tjchuan55s=res.data.data;
+              }
+            )
+          },
+          // 限时免费
+          homes44(females){
+            $api.post(
+              $config.Editor, {
+                 tj:4,
+                 limit:6,
+                 gender: females,
+                 isfree:1
+              },
+              function(res) {
+                  //console.log(JSON.stringify(res),"新书推荐")
+                  that.Arrivals3=res.data.data;
+              }
+            )
+          },
+          // 猜你喜欢
+          homes5(females){
+            that.Arrivals55=[]
+    				that.nns++
+    				if(that.nns==3){
+    					that.nns=0
+    				}
+            $api.post(
+              $config.Editor, {
+                tj:6,
+                gender: females,
+                limit:4,
+                cishu:that.nns,
+                start:0,
+                ishuan:1,
+              },
+              function(res) {
+                  //console.log(JSON.stringify(res),"猜你喜欢")
+                  that.Arrivals55=res.data.data;
+              }
+            )
+          },
+          // 精品推荐
+          homes2(index,females){
+            $api.post(
+              $config.Editor, {
+                 tj:index,
+                 gender: females,
+                 limit:4,
+                 order:"pai4 desc",
+              },
+              function(res) {
+                  //console.log(JSON.stringify(res),"新书推荐")
+                  that.Arrivals2=res.data.data;
+              }
+            )
+          },
+          // 主编推荐
+          homes1(index,females){
+            $api.post(
+              $config.Editor, {
+                 tj:index,
+                 gender: females,
+                 limit:4,
+                  order:"pai3 desc",
+              },
+              function(res) {
+                  //console.log(JSON.stringify(res),"新书推荐")
+                  that.homens=res.data.data;
+              }
+            )
+          },
+          // 主编推荐
+          homes(index,females){
+            $api.post(
+              $config.Editor, {
+                 tj:index,
+                 gender: females,
+                 limit:4,
+                 order:"pai2 desc",
+              },
+              function(res) {
+                  //console.log(JSON.stringify(res),"主编推荐")
+                  that.homen=res.data.data;
+              }
+            )
+          },
+          // 轮播图
+          lun(females){
+            $api.post(
+              $config.homelun, {
+                 tj:6,
+                 gender: females,
+                 limit:4,
+              },
+              function(res) {
+                  //console.log(JSON.stringify(res))
+                  that.Gender2=res.data.data;
+                  that.$nextTick(function () {
+                    new Swiper('#home_swiper', {
+                      autoplay: true,
+                      loop: true,
+                      autoplay: {
+                        disableOnInteraction: false,
+                      },
+                      pagination: {
+                        el: '#home_swiper_pagination',
+                        clickable: true,
+                      },
+                    });
+                  });
+              }
+            )
+          },
+      }
+    })
+  };
+
+</script>
+
+</html>

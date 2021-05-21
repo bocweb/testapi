@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport"  content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+  <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+  <title>关于我们</title>
+  <script type="text/javascript" src="../script/flexible.js"></script>
+  <link rel="stylesheet" type="text/css" href="../css/api.css" />
+  <link rel="stylesheet" type="text/css" href="../css/list.css" />
+</head>
+<style>
+.contents{
+  text-align: center;
+}
+.contents img{
+  margin: 30px auto 10px;
+  border-radius: 20px;
+}
+.contents div{
+  margin-bottom: 20px;
+}
+</style>
+<body>
+  <div class="home" id="app"  v-cloak>
+    <div class='topy' @click='returns'>
+        <img src='../image/icon_13.png'>
+        <div>关于我们</div>
+    </div>
+      <div class="contents">
+        <img src='../image/a5fdad87cfed86ae37a7335307cae0fc.png' alt="">
+        <div>腾阅读书</div>
+      </div>
+      <div class="chongz" >
+        <div>
+          <span>客服微信</span>
+        </div>
+        <span>yueyun_88</span>
+      </div>
+      <div class="chongz">
+        <div>
+          <span>客服QQ</span>
+        </div>
+        <span>568014824</span>
+      </div>
+      <div class="chongz" >
+        <div>
+          <span>版权合作QQ</span>
+        </div>
+        <span>2817167552</span>
+      </div>
+      <div class="chongz">
+        <div>
+          <span>商务合作QQ</span>
+        </div>
+        <span>718311771</span>
+      </div>
+
+  </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/jquery-3.2.0.min.js"></script>
+<script type="text/javascript" src="../script/vue.min.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript" src="../script/swiper.min.js"></script>
+<script type="text/javascript">
+  apiready = function () {
+    app = new Vue({
+      el: '#app',
+      data: {
+
+      },
+      created: function () {
+          that = this
+
+      },
+      mounted: function () {
+
+      },
+      methods: {
+        returns(){
+          api.sendEvent({
+              name: 'myEventhh',
+              extra: {
+                  key1: 's'
+              }
+          });
+          api.historyBack({
+              frameName: 'detail'
+          }, function(ret, err) {
+                  api.closeWin();
+          });
+        },
+      }
+    })
+  };
+
+</script>
+
+</html>

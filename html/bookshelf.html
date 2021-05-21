@@ -1,0 +1,305 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport"
+    content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+  <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+  <title>书架</title>
+  <script type="text/javascript" src="../script/flexible.js"></script>
+  <link rel="stylesheet" type="text/css" href="../css/api.css" />
+  <link rel="stylesheet" type="text/css" href="../css/login.css" />
+  <link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+</head>
+<style media="screen">
+.swiper-containers{
+  width: 100%;
+  overflow:hidden;
+}
+.l-li-img{
+  box-shadow: 5px 5px 7px #cccccc;
+}
+</style>
+<body>
+  <div class="home" id="app"  v-cloak>
+    <div class="topbook">
+      <div>书架</div>
+      <div>
+        <img src="../image/lis.jpg" @click='Record' alt="">
+        <img src="../image/shousuon.png"  @click="Navigationn()" alt="">
+      </div>
+    </div>
+    <div class="swiper-containers">
+    <div class="swiper-container">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide jing_bot" v-for='(items,index) in Arrivals2' :key='index'  @click="detailss(items.id)">
+              <img :src="items.image">
+              <div>
+                <div>{{items.title}}</div>
+                <div v-html='items.desc'></div>
+                <div>{{items.tstype}}</div>
+              </div>
+            </div>
+        </div>
+    </div>
+    </div>
+  <div class="l-body l-clear-both">
+    <div class="l-li" v-for="(item,key) in shujia" :key="key" @touchstart="gotouchstart"  @touchmove="gotouchmove">
+      <img class="l-li-img" :src='item.bcover'  mode="aspectFill"  @click='uied(item.bid)'>
+      <div class="l-li-txt">
+        {{item.bname}}
+      </div>
+      <div :class="timeOutEvent?'namess':'namessy'" >
+        <el-checkbox-group v-model='type'>
+        <el-checkbox class='namessn' :label="item.bid"  @change='types(item.bid)'  name="types"></el-checkbox>
+      </el-checkbox-group>
+      </div>
+
+    </div>
+    <div class="l-add">
+      <div class="l-add-view">
+        <img class="l-icon-add" src="../image/ladd.png"   @click='homes'>
+      </div>
+    </div>
+    <div :class="timeOutEvent?'namessp':'namessy'" >
+      <div @click='quxiao'>取消</div>
+      <div  @click='shanc'>删除</div>
+    </div>
+  </div>
+  <div>
+
+  </div>
+  </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/jquery-3.2.0.min.js"></script>
+<script type="text/javascript" src="../script/vue.min.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript" src="../script/swiper.min.js"></script>
+<script type="text/javascript" src="../script/index.js"></script>
+<script type="text/javascript">
+  apiready = function () {
+    app = new Vue({
+      el: '#app',
+      data: {
+          shujia:[1],//书籍列表
+          pages:1,//页数
+          type:[],//获取每个id号
+          timeOutEvents:0,
+          num:0,
+          Arrivals2:[],
+          token:"",//用户id
+          timeOutEvent:false,
+      },
+      created: function () {
+          that = this
+          api.addEventListener({
+              name: 'homes'
+          }, function(ret, err) {
+            that.timeOutEvent=false;
+              if(ret.value.key1=="s"){
+                console.log(11)
+                  history.go(0)
+                  api.sendEvent({
+                      name: 'homes',
+                      extra: {
+                          key1: 'y'
+                      }
+                  });
+                  return false
+              }
+          });
+      },
+      mounted: function () {
+        api.addEventListener({
+      name: 'keyback'
+  }, function(ret, err) {
+
+});
+        that.token = api.getPrefs({//用户id
+            sync: true,
+            key: 'key1'
+        });
+        that.Verification();
+        that.homes2(3,'female');//精品推荐
+
+      },
+      methods: {
+        detailss(ids){
+          api.openWin({
+            name: 'details',
+            url: 'details.html',
+            pageParam: {
+                id: ids,
+                lon: api.pageParam.lon==undefined?"":api.pageParam.lon.openid,
+            }
+          });
+  			},
+        homes2(index,females){
+          $api.post(
+            $config.Editor, {
+               tj:index,
+               gender: females,
+               limit:4,
+               order:"pai4 desc",
+            },
+            function(res) {
+                that.Arrivals2=res.data.data;
+                console.log(JSON.stringify(that.Arrivals2),"新书推荐")
+                that.$nextTick(function () {
+                  var swiper = new Swiper('.swiper-container',{
+                    autoplay: true,
+                    speed: 1000,
+                    loop: true,
+                    centeredSlides: true,
+                  });
+                });
+            }
+          )
+        },
+        uied(ids){//开始阅读
+          that.timeOutEvent=false;
+          var openid;
+          if (api.pageParam.lon==undefined) {
+              openid="";
+          }else{
+            openid=api.pageParam.lon
+          }
+          api.requestPermission({
+              list:["storage"],
+              code:1
+          }, function(ret, err){
+            var quanx=[]
+            quanx =JSON.stringify(ret.list)
+              if(quanx.indexOf("true")>0){
+                api.openWin({
+                  name: 'book',
+                  url: 'book.html',
+                  pageParam: {
+                      userid: openid,
+                      bid: ids,
+                      cid: "",
+                      startread: 1,
+                  }
+                });
+              }else{
+                $api.toast("请同意储存权限", 500 )
+              }
+          });
+
+        },
+        Navigationn(){//跳转到搜索页面
+          api.openWin({
+            name: 'Navigationns',
+            url: 'Navigationns_frm.html',
+            pageParam: {
+                lon: api.pageParam.lon==undefined?"":api.pageParam.lon.openid,
+            }
+          });
+          console.log(1)
+        },
+        Record(){//跳转到阅读历史
+          api.openWin({
+            name: 'Record',
+            url: 'Record.html',
+          });
+        },
+        shanc(){//删除书籍
+          that.type=that.type.join(',')
+          console.log(that.type)
+          $api.get(
+            $config.jiarushujq, {
+              bid:that.type,
+              userid:that.token==undefined?"":that.token
+            },
+            function(res) {
+              console.log(JSON.stringify(api.pageParam.lon.openid))
+              console.log(JSON.stringify(res))
+              if(res.code==1){
+                    that.shujia=[];
+                    that.shujia.length=2;
+                    that.Verification();
+                    that.timeOutEvent=!that.timeOutEvent
+                    $api.toast( res.msg, 500 )
+                }else if(res.code==2){
+                     $api.toast( res.msg, 500 )
+                }else if(res.code==3){
+                     $api.toast( res.msg, 500 )
+                }
+            }
+          )
+        },
+        quxiao(){//取消删除
+          type=[];
+          that.timeOutEvent=!that.timeOutEvent
+        },
+        types(id){
+            console.log(that.type)
+        },
+        gotouchmove(){
+            clearTimeout(that.timeOutEvents);//清除定时器
+        },
+        gotouchstart(id){
+          //  clearTimeout(that.timeOutEvents);//清除定时器
+           that.timeOutEvents = setTimeout(function(){
+              that.timeOutEvent=true
+          },600);//这里设置定时
+        },
+        // 点击跳转详情页
+  			details(ids){
+          setTimeout(function(){
+            that.timeOutEvent=false;
+          },700)
+
+          api.openWin({
+            name: 'details',
+            url: 'details.html',
+            pageParam: {
+                id: ids
+            }
+          });
+  			},
+        homes(){//跳转首页
+          api.openWin({
+            name: 'homes',
+            url: 'homes.html',
+          });
+        },
+        // 获取书架
+          Verification(){//获取书架详情
+            if(that.token==""){
+              that.shujia=[];
+            }
+            $api.post(
+              $config.shujia, {
+                rows:20,
+                page: that.pages,
+                userid:that.token==undefined?"":that.token,
+              },
+              function(res) {
+                console.log(JSON.stringify(res),"新书推荐")
+                if(res.totalpage==0){
+                  that.shujia=[];
+                }
+                if(res.code==1){
+                    if(that.pages<=res.totalpage){
+                        if(that.pages==1){
+                            that.shujia = res.data
+                        }else{
+                            that.shujia=that.shujia.concat(res.data)
+                        }
+                        console.log(that.shujia)
+                    }
+                }
+              }
+            )
+          }
+      }
+    })
+  };
+
+</script>
+
+</html>

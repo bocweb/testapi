@@ -1,0 +1,249 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport"  content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+  <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+  <title>首页</title>
+  <script type="text/javascript" src="../script/flexible.js"></script>
+  <link rel="stylesheet" type="text/css" href="../css/api.css" />
+  <link rel="stylesheet" type="text/css" href="../css/list.css" />
+</head>
+
+<body>
+  <div class="home" id="app"  v-cloak>
+    <div class="top"   @click='login' v-if="token==''">
+      <div class="top_top">
+        <img src="../image/module_icon_6.png" alt="">
+        <div>
+          <!-- <div style="line-height: 25px;">游客账号：{{tokeny}}</div> -->
+          <div style="line-height: 25px;">点击登录</div>
+        </div>
+      </div>
+      <img src="../image/icon_19.png" alt="">
+    </div>
+      <div class="top" v-else  @click='loginss'>
+        <div class="top_top">
+          <img :src='api.pageParam.lon==undefined?"":gerenxinxs.avatar' alt="">
+          <div>
+            <div>{{api.pageParam.lon==undefined?"":gerenxinxs.nickname}}</div>
+            <div>ID：{{api.pageParam.lon==undefined?"":gerenxinxs.id}}</div>
+          </div>
+        </div>
+        <img src="../image/icon_19.png" alt="">
+      </div>
+      <div class="heightss"></div>
+      <div class="chongz">
+        <div>
+          <img src="../image/icon_233.png" alt="">
+          <span>余额：{{gerenxinxsys.score}}书币</span>
+        </div>
+        <div  @click='Signss'>充值</div>
+      </div>
+      <div class="chongz"   @click='vips'>
+        <div>
+          <img src="../image/icon_233.png" alt="">
+          <span>开通年费VIP</span>
+        </div>
+        <img src="../image/icon_19.png" alt="">
+      </div>
+      <div class="heightss"></div>
+      <div class="chongz" @click='Recharge'>
+        <div>
+          <img src="../image/icon_232.png" alt="">
+          <span>充值记录</span>
+        </div>
+        <img src="../image/icon_19.png" alt="">
+      </div>
+      <div class="chongz" @click='Rechargecf'>
+        <div>
+          <img src="../image/icon_232.png" alt="">
+          <span>消费记录</span>
+        </div>
+        <img src="../image/icon_19.png" alt="">
+      </div>
+      <div class="heightss"></div>
+      <div class="chongz"  @click='Sign'>
+        <div>
+          <img src="../image/icon_231.png" alt="">
+          <span>签到</span>
+        </div>
+        <img src="../image/icon_19.png" alt="">
+      </div>
+      <div class="chongz"  @click='Record'>
+        <div>
+          <img src="../image/icon_23.png" alt="">
+          <span>阅读记录</span>
+        </div>
+        <img src="../image/icon_19.png" alt="">
+      </div>
+      <div class="chongz"  @click='shezhi'>
+        <div>
+          <img src="../image/shez.png" alt="">
+          <span>设置</span>
+        </div>
+        <img src="../image/icon_19.png" alt="">
+      </div>
+  </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/jquery-3.2.0.min.js"></script>
+<script type="text/javascript" src="../script/vue.min.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript" src="../script/swiper.min.js"></script>
+<script type="text/javascript">
+  apiready = function () {
+    app = new Vue({
+      el: '#app',
+      data: {
+          gerenxinxs:[],
+          gerenxinxsys:[],
+          tokeny:"",
+          token:"",
+          id:"",
+      },
+      created: function () {
+          that = this
+
+      },
+      mounted: function () {
+        that.tokeny = api.getPrefs({
+            sync: true,
+            key: 'key1y'
+        });
+
+        api.addEventListener({
+      name: 'keyback'
+  }, function(ret, err) {
+
+});
+        that.token = api.getPrefs({
+            sync: true,
+            key: 'key1'
+        });
+        api.addEventListener({
+            name: 'myEventhh'
+        }, function(ret, err) {
+            if(ret.value.key1=="s"){
+                history.go(0)
+                api.sendEvent({
+                    name: 'myEvent',
+                    extra: {
+                        key1: 'y'
+                    }
+                });
+                return false
+            }
+        });
+
+        that.gerenxinx();
+        that.gerenxinxy();
+      },
+      methods: {
+        shezhi(){
+          api.openWin({
+            name: 'shezhi',
+            url: 'shezhi.html',
+          });
+        },
+        gerenxinxy(){
+          console.log(api.pageParam.lon)
+          $api.post(
+            $config.gerenxinxss, {
+                userid:that.token==""?that.tokeny:that.token,
+            },
+            function(response) {
+              console.log(JSON.stringify(response))
+                that.gerenxinxsys=response.data
+            }
+          )
+        },
+        loginss(){
+          api.openWin({
+            name: 'perso',
+            url: 'perso.html',
+          });
+        },
+        gerenxinx(){
+          console.log(that.token)
+          $api.get(
+            $config.data, {
+                id:that.token==undefined?"":that.token,
+            },
+            function(response) {
+              console.log(JSON.stringify(response))
+                that.gerenxinxs=response.data
+            }
+          )
+        },
+        Record(){
+          api.openWin({
+            name: 'Record',
+            url: 'Record.html',
+          });
+        },
+
+          login(){
+            api.openWin({
+              name: 'login',
+              url: 'login.html',
+              pageParam: {
+                  lon: '1',
+              }
+            });
+          },
+          vips(){
+            if($api.getStorage("key")==undefined){
+                api.openWin({
+                  name: 'login',
+                  url: 'login.html'
+                });
+            }else{
+              api.openWin({
+                name: 'vip',
+                url: 'vip.html',
+              });
+             }
+
+          },
+          Signss(){
+            if($api.getStorage("key")==undefined){
+                api.openWin({
+                  name: 'login',
+                  url: 'login.html'
+                });
+            }else{
+              api.openWin({
+                name: 'Signss',
+                url: 'Signss.html',
+              });
+            }
+
+          },
+          Rechargecf(){
+            api.openWin({
+              name: 'Rechargecf',
+              url: 'Rechargecf.html',
+            });
+          },
+          Recharge(){
+            api.openWin({
+              name: 'Recharge',
+              url: 'Recharge.html',
+            });
+          },
+          Sign(){
+            api.openWin({
+              name: 'Sign',
+              url: 'Sign.html',
+            });
+          }
+      }
+    })
+  };
+
+</script>
+
+</html>

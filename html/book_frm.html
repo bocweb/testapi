@@ -1,0 +1,421 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport"
+    content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+  <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+  <title>小说内容页</title>
+  <script type="text/javascript" src="../script/flexible.js"></script>
+  <link rel="stylesheet" type="text/css" href="../css/api.css" />
+  <link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+  <preference name="bookz" value="rgba(0,0,0,0)"/>
+  <style>
+.phone{
+  font-size: 20px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+.container1{
+  color: #000;
+  box-sizing: border-box;
+/*   transform: translateX(-375px); */
+}
+.container{
+  color: #000;
+  margin-top: 20px;
+  box-sizing: border-box;
+  column-width: 355px;
+  column-gap:0;
+  transition:0.5s;
+/*   transform: translateX(-375px); */
+}
+.contents{
+  width: 50%;
+  height: 30%;
+  position: fixed;
+  z-index: 1000;
+  left: 25%;
+  top:35%;
+}
+.topsns{
+  text-align: center;
+  height:70px;
+  position: absolute;
+  left: 0;
+  top:0;
+  line-height: 70px;
+  position: fixed;
+  width: 100%;
+  display: flex;
+  padding: 0 10px;
+  color: #000;
+  box-sizing: border-box;
+  justify-content:space-between;
+  top:0;
+}
+.dianc{
+  position: relative;
+  width: 15px;
+  height: 10px;
+  margin-right: 10px;
+}
+.dianc img{
+  width: 17px;
+  height: 10px;
+  top: 10px;
+  left: 0;
+  position: absolute;
+}
+.dianc div{
+  position: absolute;
+  left: 0;
+  top: 10px;
+  height: 100%;
+  background: #000000;
+}
+.topsnsw{
+  text-align: center;
+  line-height: 30px;
+  height:30px;
+  position: fixed;
+  padding: 0px 20px;
+  bottom: 0px;
+  left: 0px;
+  width: 100%;
+  display: flex;
+  color: #000;
+  box-sizing: border-box;
+  justify-content:space-between;
+}
+  </style>
+</head>
+<body>
+  <div class="phone">
+  <div class="page">
+    <div class="container1">
+    </div>
+    <div class="container">
+    </div>
+    <div  class="topsnsw">
+      <div class="times"></div>
+      <div class="than"></div>
+      <div class="dianc">
+        <img src="../image/dianc.png" alt="">
+        <div class='thans'></div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/jquery-3.2.0.min.js"></script>
+<script type="text/javascript" src="../script/vue.min.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript" src="../script/swiper.min.js"></script>
+<script type="text/javascript">
+apiready = function () {
+  app = new Vue({
+    el: '#app',
+    data: {
+      swileft:0,//左滑
+      swileftw:0,//右滑
+      token:"",//token
+      listsm:[],//内容
+      currentTime:"", // 获取当前时间
+      pages:0,//章多少页
+      colors:"",//颜色
+      widts:0,//电池的宽度
+      hang:"",
+      turf:false,
+      swiright:20,//字体大小
+    },
+    created: function () {
+        that = this
+        var _this = this; //声明一个变量指向Vue实例this，保证作用域一致
+        _this.currentTime= new Date()
+        _this.currentTime = //修改数据date
+        new Date().getHours() +
+        ":" +
+        new Date().getMinutes()
+        this.timer = setInterval(function() {
+
+          _this.currentTime= new Date()
+          _this.currentTime = //修改数据date
+            new Date().getHours() +
+            ":" +
+            new Date().getMinutes()
+            $(".times").html(_this.currentTime)
+        }, 1000);
+        that.list();
+    },
+    mounted: function () {
+      // 电池
+      api.addEventListener({
+          name: 'batterystatus'
+      }, function(ret, err) {
+        $(".thans").css("width",ret.level+"%")
+      });
+      // 全屏
+      api.setFullScreen({
+        fullScreen: true
+      });
+      // 底部网络时间
+      api.addEventListener({
+          name:'offline'
+      }, function(ret, err){
+        $(".than").html('当前网络已断开...')
+      });
+      api.addEventListener({
+          name:'online'
+      }, function(ret, err){
+        if(ret.connectionType=="2G"){
+          $(".than").html('当前网络状态不好...')
+        }else{
+          $(".than").html('')
+        }
+
+      });
+      // 字体大小
+      if($api.getStorage("keyns")==undefined){
+        $(".container1").css("font-size","20px")
+        $(".container").css("font-size","20px")
+      }else{
+        $(".container1").css("font-size",$api.getStorage("keyns")+"px")
+        $(".container").css("font-size",$api.getStorage("keyns")+"px")
+      }
+      // 行间距
+      console.log(JSON.stringify($(".container p")))
+      if($api.getStorage("keynsx")==undefined){
+
+      }else{
+        $(".container1 p").css("margin-top",$api.getStorage("keynsx")+"px")
+        $(".container p").css("margin-top",$api.getStorage("keynsx")+"px")
+      }
+      // 监听行间距
+      api.addEventListener({
+        name: 'myEventx'
+        }, function(ret, err) {
+          that.hang=ret.value.key1
+          console.log(ret.value.key1)
+          $(".container1 p").css("margin-top",ret.value.key1+"px")
+          $(".container p").css("margin-top",ret.value.key1+"px")
+          $(".container1").css("display","block");
+          that.pages=$(".container1").html(that.listsm.content).height()/api.winHeight;
+          console.log(that.pages)
+          $(".container1").css("display","none");
+      });
+      // 监听字体变化
+      api.addEventListener({
+        name: 'myEvent'
+        }, function(ret, err) {
+          $(".container1").css("font-size",ret.value.key1+"px")
+          $(".container").css("font-size",ret.value.key1+"px")
+          $(".container1").css("display","block");
+          that.pages=$(".container1").html(that.listsm.content).height()/api.winHeight;
+          console.log(that.pages)
+          $(".container1").css("display","none");
+      });
+      // 颜色
+      if($api.getStorage("keyn")==undefined){
+        $(".phone").css("background","#f0f8ff")
+      }else{
+        $(".phone").css("background",$api.getStorage("keyn"))
+      }
+      // 颜色监听
+      api.addEventListener({
+        name: 'myEvents'
+        }, function(ret, err) {
+          console.log(ret.value.key2)
+          $(".phone").css("background",ret.value.key2)
+      });
+      // 点击页面
+      api.addEventListener({
+          name:'tap'
+      }, function(ret, err){
+        that.turf=!that.turf
+        if(that.turf==true){
+          api.openFrameGroup({
+              name: 'books',
+              rect: {
+                  x: 0,
+                  y: 0,
+                  w: 'auto',
+                  h: "70px"
+              },
+              frames: [{
+                  name: 'books',
+                  url: 'books.html',
+                  pageParam: {
+                      list:that.listsm.title
+                  },
+                  bgColor: '#fff'
+              }]
+          }, function(ret, err) {
+          });
+          api.openFrameGroup({
+              name: 'bookz',
+              rect: {
+                y:api.winHeight-90,
+                  w: 'auto',
+                  h: "90px"
+              },
+              frames: [{
+                  name: 'bookz',
+                  url: 'bookz.html',
+                  bgColor: '#fff'
+              }]
+          }, function(ret, err) {
+          });
+        }else{
+          api.closeFrameGroup({
+              name: 'books'
+          });
+          api.closeFrameGroup({
+              name: 'bookz'
+          });
+        }
+      });
+      // 左滑动
+      api.addEventListener({
+          name:'swipeleft'
+      }, function(ret, err){
+        that.swileft++;
+        that.swileftw--;
+        if(that.swileft==Math.ceil(that.pages)){
+          that.netex();
+          return false;
+        }
+         $(".container").css("transform","translateX("+-that.swileft*api.winWidth+"px)");
+      });
+      // 右滑动
+      api.addEventListener({
+          name:'swiperight'
+      }, function(ret, err){
+        that.swileft--;
+        that.swileftw++;
+        if(that.swileftw>0){
+          that.tops();
+          return false;
+        }
+          $(".container").css("transform","translateX("+that.swileftw*api.winWidth+"px)");
+      });
+
+      // 分列
+      $(".phone").height(api.winHeight);
+      $(".phone").width(api.winWidth);
+      $(".container").height(api.winHeight-50);
+      $(".container").width(api.winWidth);
+      $(".container").css("column-width",api.winWidth+"px");
+    },
+    methods: {
+      // 上一章
+      tops(){
+        that.token = api.getPrefs({
+            sync: true,
+            key: 'keyns'
+        });
+        that.listsm.idx--//下一张参数
+        $api.post(//获取章节内容
+          $config.revashanglis, {
+            bid:api.pageParam.bid,
+            userid:that.token,
+            idx:that.listsm.idx,
+          },function(res){
+            if(that.listsm.idx>=1){
+            //内容
+            that.listsm=res.data;
+            // 判断一共多少页
+            $(".container1").css("display","block");
+            $(".container").css("transition","0s");
+            $(".container").html(that.listsm.content);
+            $(".container1").html(that.listsm.content)
+            $(".container1 p").css("margin-top",that.hang+"px")
+            $(".container p").css("margin-top",that.hang+"px")
+            that.pages=$(".container1").height()/api.winHeight;
+            // 上一章节最后一页
+            that.swileft=Math.ceil(that.pages);
+            that.swileftw=-Math.ceil(that.pages);
+            $(".container").css("transform","translateX("+that.swileftw*api.winWidth+"px)");
+            $(".container1").css("display","none");
+            setTimeout(function(){
+              $(".container").css("transition","0.5s");
+            },100)
+          }else{
+            that.listsm.idx=1
+            $api.toast( "已经是第一章！", 500 )
+          }
+          })
+      },
+      // 下一章
+      netex(){
+        // 下一章的第一页
+        that.swileft=0;
+        that.swileftw=0;
+        that.token = api.getPrefs({
+            sync: true,
+            key: 'key1'
+        });
+        that.listsm.idx++//下一张参数
+        $api.post(//获取章节内容
+          $config.revashanglisw, {
+            bid:api.pageParam.bid,
+            userid:that.token,
+            idx:that.listsm.idx,
+          },function(res){
+            // 内容
+            if(res.code==5){
+              $api.toast( "已经是最后一章了", 500 )
+            }else{
+              that.listsm=res.data;
+              console.log(JSON.stringify(res.code))
+              $(".container").css("transform","translateX(0px)");
+              $(".container1").css("display","block");
+              $(".container").css("transition","0s");
+              $(".container").html(that.listsm.content);
+              $(".container1").html(that.listsm.content)
+              $(".container1 p").css("margin-top",that.hang+"px")
+              $(".container p").css("margin-top",that.hang+"px")
+              that.pages=$(".container1").height()/api.winHeight;
+              console.log(that.pages)
+              $(".container1").css("display","none");
+              setTimeout(function(){
+                $(".container").css("transition","0.5s");
+              },100)
+            }
+          })
+      },
+      // 获取章节内容
+      list(){
+        that.token = api.getPrefs({
+            sync: true,
+            key: 'key1'
+        });
+        $api.post(//获取详情
+          $config.xiangqi, {
+            bid:api.pageParam.bid,
+            userid:that.token,
+            cid:api.pageParam.cid,
+            startread:api.pageParam.startread
+          },
+          function(res) {
+            // 内容
+            that.listsm=res.data;
+            // 判断多少页
+            $(".container").html(that.listsm.content);
+            $(".container1 p").css("margin-top",$api.getStorage("keynsx")+"px")
+            $(".container p").css("margin-top",$api.getStorage("keynsx")+"px")
+            that.pages=$(".container1").html(that.listsm.content).height()/api.winHeight;
+            $(".container1").css("display","none");
+          }
+        )
+      },
+    }
+  })
+};
+
+</script>
+
+</html>

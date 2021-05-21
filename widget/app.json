@@ -1,0 +1,31 @@
+{
+  "name": "root",
+  "tabBar": {
+    "frames": [{
+      "name": "bookshelf",
+      "url": "./bookshelf.html",
+    }, {
+      "name": "home_frm",
+      "url": "./home_frm.html",
+    }, {
+      "name": "classification",
+      "url": "./classification.html",
+    }, {
+      "name": "personal",
+      "url": "./personal.html",
+    }],
+    "list": [{
+        "iconPath": "../image/tab_bookshelf_icon3.png",
+        "selectedIconPath": "../image/tab_bookshelf_press_icon.png"
+    }, {
+        "iconPath":"../image/tab_home_icon3.png",
+        "selectedIconPath": "../image/tab_home_press_icon.png"
+    }, {
+        "iconPath":"../image/table-w.png",
+        "selectedIconPath":"../image/table-b.png"
+    }, {
+        "iconPath":"../image/tab_mine_icon3.png",
+        "selectedIconPath":"../image/tab_mine_press_icon.png"
+    }]
+  }
+}

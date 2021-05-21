@@ -1,0 +1,225 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport"
+    content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+  <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+  <title>分类</title>
+  <script type="text/javascript" src="../script/flexible.js"></script>
+  <link rel="stylesheet" type="text/css" href="../css/api.css" />
+  <link rel="stylesheet" type="text/css" href="../css/main.css" />
+  <link rel="stylesheet" type="text/css" href="../css/swiper.min.css">
+</head>
+<style>
+.el-carousel__item{
+  width: 70%;
+  margin-left: -10%;
+  background: #ccc;
+  border-radius: 20px;
+}
+  .el-carousel__item img {
+    color: #475669;
+    font-size: 14px;
+    opacity: 0.75;
+    border-radius: 20px;
+    margin: 0;
+    height: 120px;
+    width: 100%;
+  }
+  .tables{
+    background: #fff;
+    color: #4889F5;
+  }
+
+
+</style>
+<body>
+  <div id="app"  v-cloak>
+  <div class="home">
+      <div class="tables">
+        <div @click="table(2)" :class="mains==2?'sdiv':''">女生</div>
+        <div @click="table(1)" :class="mains==1?'sdiv':''">男生</div>
+      </div>
+  </div>
+  <div class="Navigations">
+    <div v-for="(item,index) in phenyl"  :class='topone==item.id?"ssdiv":""' :key="index" @click="toptwes(item.id)">{{item.name}}</div>
+  </div>
+  <div class="heightss"></div>
+  <div class="Navigations Navigationss">
+    <div :class='topover=="全部"?"ssdiv":""'  @click='onovers("全部","")'>全部</div>
+    <div :class='topover=="连载"?"ssdiv":""' @click='onovers("连载",0)'>连载</div>
+    <div :class='topover=="完本"?"ssdiv":""' @click='onovers("完本",1)'>完本</div>
+    <div :class='topover=="免费"?"ssdiv":""' @click='onovers("免费","free")'>免费</div>
+  </div>
+  <div class="heightss"></div>
+  <img src="../image/wus.png" style="width:40%;height:150px;margin:100px 30%;"v-if='nulls'/>
+  <div class="jing_bot"  v-for="(item, index) in fenlie" :key="index" @click='details(item.id)'>
+    <img :src="item.image">
+    <div>
+      <div>{{item.title}}</div>
+      <div v-html='item.desc'></div>
+      <div>{{item.zhuishu}}追看</div>
+    </div>
+  </div>
+  </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/jquery-3.2.0.min.js"></script>
+<script type="text/javascript" src="../script/vue.min.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript" src="../script/swiper.min.js"></script>
+<script type="text/javascript">
+  apiready = function () {
+    app = new Vue({
+      el: '#app',
+      data: {
+          mains:2,
+          nulls:false,
+          phenyl:[],//分类
+          fenlie:[],//分类list
+          xingb:"",
+  				tstype:"",
+  				xstype:"",
+          topover:"全部",
+          topone:1,
+          toptwe:"",
+  				pages:1,
+      },
+      created: function () {
+          that = this
+      },
+      mounted: function () {
+        // 男女频切换
+        if($api.getStorage("mains")!=undefined){
+            that.table($api.getStorage("mains"))
+            that.mains=$api.getStorage("mains")
+        }
+        api.addEventListener({
+      name: 'keyback'
+  }, function(ret, err) {
+
+});
+        api.addEventListener({
+            name:'viewappear'
+        },function(ret,err){
+            api.setFullScreen({
+                ullScreen: false
+            });
+        });
+          that.phenyls("female")//分类top
+          this.fenlies('female',1,"");//分类list
+      },
+      methods: {
+        // 切换
+        onovers(name,idns){
+            that.fenlie=[];
+            that.xstype=idns;
+            that.pages=1;
+            //console.log(that.xingb,that.mains,idns)
+            that.topover=name
+              that.fenlies("",that.mains,that.xstype)
+
+        },
+        // 男女频切换
+          table:function(index){
+            that.mains =index
+            var key ="mains";
+            var user =index
+            $api.setStorage(key,user);
+            api.setPrefs({
+                key: 'mains',
+                value: index
+            });
+            if(index==1){
+              that.fenlie=[]
+              that.phenyls("male")//分类top
+              this.fenlies('male',1,"");//分类list
+            }else{
+              that.fenlie=[]
+              that.phenyls("female")//分类top
+              this.fenlies('female',1,"");//分类list
+            }
+          },
+          details(ids){
+            api.openWin({
+              name: 'details',
+              url: 'details.html',
+              pageParam: {
+                  id: ids
+              }
+            });
+    			},
+          toptwes(ids){
+            that.fenlie=[];
+              that.topone = ids;
+              that.tstype=ids;
+              console.log(ids,that.topone,'sss')
+                that.fenlies("",that.tstype,"");
+
+          },
+          // 分类
+          fenlies(xingb,tstype,xstype){
+            if(xingb!=""){
+  					  that.xingb=xingb
+  					  that.tstype=tstype
+  					  that.xstype=xstype
+  				  }
+            $api.post(
+              $config.Editor, {
+                 limit:10,
+                 start:(that.pages-1)*10,
+                 gender:that.xingb,
+                 tstype:that.tstype,
+                 xstype:that.xstype,
+              },
+              function(res) {
+                  if(that.pages<=res.totalpage){
+    							  if(that.pages==1){
+    								  that.fenlie=res.data.data;
+    							  }else{
+    								  that.fenlie=that.fenlie.concat(res.data.data)
+                      console.log(JSON.stringify(res),"分类")
+    							  }
+    						  }
+                  if(that.fenlie.length==0){
+                    that.nulls=true
+                  }else{
+                    that.nulls=false
+                  }
+              }
+            )
+          },
+          // 分类
+          phenyls(females){
+            $api.post(
+              $config.list, {
+                 gender: females,
+              },
+              function(res) {
+                  console.log(JSON.stringify(res),"分类")
+                  that.phenyl=res.data;
+              }
+            )
+          },
+      }
+    })
+    //滚动到底部加载更多
+    api.addEventListener({
+      name: 'scrolltobottom',
+      extra: {
+        threshold: 0 //设置距离底部多少距离时触发，默认值为0，数字类型
+      }
+    }, function (ret, err) {
+      console.log(111111)
+
+        that.pages++
+        that.fenlies("");
+    });
+  };
+
+</script>
+
+</html>

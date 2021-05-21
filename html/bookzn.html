@@ -1,0 +1,149 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport"
+    content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+  <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+  <title>首页</title>
+  <script type="text/javascript" src="../script/flexible.js"></script>
+  <link rel="stylesheet" type="text/css" href="../css/api.css" />
+  <link rel="stylesheet" type="text/css" href="../css/login.css" />
+  <style>
+  .topsns{
+    text-align: center;
+    line-height: 30px;
+    height:30px;
+    position: fixed;
+    width: 100%;
+    display: flex;
+    padding: 0 10px;
+    color: #000;
+    box-sizing: border-box;
+    justify-content:space-between;
+    bottom:0;
+  }
+  </style>
+</head>
+
+<body>
+  <div class="home" id="app"  v-cloak>
+    <div  class="topsns" :style='{background:colors}'>
+      <div>{{currentTime}}</div>
+      <div>{{than}}</div>
+      <div>{{isNaN(num)?0:num}}%</div>
+    </div>
+  </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/jquery-3.2.0.min.js"></script>
+<script type="text/javascript" src="../script/vue.min.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript" src="../script/swiper.min.js"></script>
+<script type="text/javascript">
+  apiready = function () {
+    app = new Vue({
+      el: '#app',
+      data: {
+        num:0,
+        timer: "",//定义一个定时器的变量
+        currentTime:"", // 获取当前时间
+        tops:"",
+        nums:"",
+        than:"",
+        colors:"",
+      },
+      created: function () {
+          that = this
+
+          var _this = this; //声明一个变量指向Vue实例this，保证作用域一致
+          _this.currentTime= new Date()
+          _this.currentTime = //修改数据date
+          new Date().getHours() +
+          ":" +
+          new Date().getMinutes()
+    this.timer = setInterval(function() {
+      _this.currentTime= new Date()
+      _this.currentTime = //修改数据date
+        new Date().getHours() +
+        ":" +
+        new Date().getMinutes()
+    }, 1000);
+      },
+      beforeDestroy() {
+    if (this.timer) {
+      clearInterval(this.timer); // 在Vue实例销毁前，清除我们的定时器
+    }
+  },
+      mounted: function () {
+        api.addEventListener({
+            name:'offline'
+        }, function(ret, err){
+          that.than='当前网络已断开...'
+        });
+        api.addEventListener({
+            name:'online'
+        }, function(ret, err){
+          if(ret.connectionType=="2G"){
+            that.than='当前网络状态不好...'
+          }else{
+            that.than=''
+          }
+
+        });
+          api.addEventListener({
+            name: 'myEvent'
+            }, function(ret, err) {
+              console.log(JSON.stringify(ret.value.key16))
+              that.tops=ret.value.key16
+          });
+          api.addEventListener({
+            name: 'myEvent'
+            }, function(ret, err) {
+              that.num=parseInt(ret.value.keyss1)
+              that.nums=ret.value.keyss2
+          });
+          if($api.getStorage("keyn")==undefined){
+            that.colors="#f0f8ff"
+          }else{
+            that.colors=$api.getStorage("keyn")
+          }
+          api.addEventListener({
+            name: 'myEvents'
+            }, function(ret, err) {
+              that.colors=ret.value.key2
+          });
+      },
+      methods: {
+        jian(){
+          if(that.num>12){
+            that.num--
+          }
+          api.sendEvent({
+              name: 'myEvent',
+              extra: {
+                  key1: that.num
+              }
+          });
+
+          var key ="keyns";
+          var user =that.num
+          $api.setStorage(key, user);
+        },
+        jians(){
+          if(that.num<40){
+            that.num++
+          }
+          var key ="keyns";
+          var user =that.num
+          $api.setStorage(key, user);
+        }
+      }
+    })
+  };
+
+</script>
+
+</html>

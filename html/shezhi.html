@@ -1,0 +1,124 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport"  content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+  <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+  <title>首页</title>
+  <script type="text/javascript" src="../script/flexible.js"></script>
+  <link rel="stylesheet" type="text/css" href="../css/api.css" />
+  <link rel="stylesheet" type="text/css" href="../css/list.css" />
+</head>
+
+<body>
+  <div class="home" id="app"  v-cloak>
+    <div class='topy' @click='returns'>
+        <img src='../image/icon_13.png'>
+        <div>设置</div>
+    </div>
+      <div class="chongz"  @click='qingchu'>
+        <div>
+          <span>清除缓存</span>
+        </div>
+        <span>{{Math.round(huanc*100)/100}}M</span>
+      </div>
+      <div class="chongz"  @click='guanyu'>
+        <div>
+          <span>关于我们</span>
+        </div>
+        <img src="../image/icon_19.png" alt="">
+      </div>
+      <button class="sbutton"  @click='zhux'>退出登录</button>
+  </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/jquery-3.2.0.min.js"></script>
+<script type="text/javascript" src="../script/vue.min.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript" src="../script/swiper.min.js"></script>
+<script type="text/javascript">
+  apiready = function () {
+    app = new Vue({
+      el: '#app',
+      data: {
+          huanc:"",
+      },
+      created: function () {
+          that = this
+
+      },
+      mounted: function () {
+        api.addEventListener({
+            name: 'keyback'
+        }, function(ret, err) {
+          api.sendEvent({
+              name: 'myEventhh',
+              extra: {
+                  key1: 's'
+              }
+          });
+          api.historyBack({
+              frameName: 'detail'
+          }, function(ret, err) {
+              if (!ret.status) {
+                  api.closeWin();
+              }
+          });
+        });
+        api.getCacheSize(function(ret) {
+          that.huanc = ret.size/1024/1024;
+          console.log(that.huanc)
+        });
+      },
+      methods: {
+
+        returns(){
+          api.sendEvent({
+              name: 'myEventhh',
+              extra: {
+                  key1: 's'
+              }
+          });
+          api.historyBack({
+              frameName: 'detail'
+          }, function(ret, err) {
+                  api.closeWin();
+          });
+        },
+        qingchu(){
+          api.clearCache(function() {
+              api.toast({
+                  msg: '清除完成'
+              });
+              api.getCacheSize(function(ret) {
+                that.huanc = ret.size;
+                console.log(that.huanc)
+              });
+          });
+        },
+        guanyu(){
+          api.openWin({
+            name: 'guanyu',
+            url: 'guanyu.html'
+          });
+        },
+        zhux(){
+          $api.rmStorage('key')
+          api.removePrefs({
+              key: 'key1'
+          });
+          api.openWin({
+            name: 'login',
+            url: 'login.html'
+          });
+          $api.toast("成功退出登录", 500 )
+        },
+      }
+    })
+  };
+
+</script>
+
+</html>

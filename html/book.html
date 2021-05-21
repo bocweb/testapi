@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport"
+    content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+  <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+  <title>小说内容页</title>
+  <script type="text/javascript" src="../script/flexible.js"></script>
+  <link rel="stylesheet" type="text/css" href="../css/api.css" />
+  <link rel="stylesheet" type="text/css" href="../css/login.css" />
+</head>
+
+<body>
+  <div class="home" id="app"  v-cloak>
+
+  </div>
+</body>
+<script type="text/javascript" src="../script/jquery-3.2.0.min.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript">
+apiready = function() {
+  $api.fixStatusBar();
+  $api.openFrame(api.pageParam);
+  api.addEventListener({
+      name: 'keyback'
+  }, function(ret, err) {
+      var flag = confirm('确定退出小说？');
+      if(flag){
+        api.closeWin();
+      }
+  });
+};
+</script>
+
+</html>

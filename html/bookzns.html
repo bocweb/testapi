@@ -1,0 +1,161 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport"
+    content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+  <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+  <title>首页</title>
+  <script type="text/javascript" src="../script/flexible.js"></script>
+  <link rel="stylesheet" type="text/css" href="../css/api.css" />
+  <link rel="stylesheet" type="text/css" href="../css/login.css" />
+  <style>
+  .topsns{
+    text-align: center;
+    height:70px;
+    line-height: 70px;
+    position: fixed;
+    width: 100%;
+    display: flex;
+    padding: 0 10px;
+    color: #000;
+    box-sizing: border-box;
+    justify-content:space-between;
+    top:0;
+  }
+  .dianc{
+    position: relative;
+    width: 15px;
+    height: 10px;
+    margin-right: 10px;
+  }
+  .dianc img{
+    width: 17px;
+    height: 10px;
+    top: 25px;
+    left: 0;
+    position: absolute;
+  }
+  .dianc div{
+    position: absolute;
+    left: 0;
+    top: 25px;
+    height: 100%;
+    background: #000000;
+  }
+  </style>
+</head>
+
+<body>
+  <div class="home" id="app"  v-cloak>
+    <div  class="topsns" :style='{background:colors}'>
+      <div>{{nums==""?api.pageParam.id:nums}}</div>
+      <div class="dianc">
+        <img src="../image/dianc.png" alt="">
+        <div :style='{width:widts}'></div>
+      </div>
+
+    </div>
+  </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/jquery-3.2.0.min.js"></script>
+<script type="text/javascript" src="../script/vue.min.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript" src="../script/swiper.min.js"></script>
+<script type="text/javascript">
+  apiready = function () {
+    app = new Vue({
+      el: '#app',
+      data: {
+        num:0,
+        timer: "",//定义一个定时器的变量
+        currentTime:"", // 获取当前时间
+        tops:"",
+        nums:"",
+        widts:0,
+        colors:"",
+      },
+      created: function () {
+          that = this
+          var _this = this; //声明一个变量指向Vue实例this，保证作用域一致
+          _this.currentTime= new Date()
+          _this.currentTime = //修改数据date
+          new Date().getHours() +
+          ":" +
+          new Date().getMinutes()
+    this.timer = setInterval(function() {
+      _this.currentTime= new Date()
+      _this.currentTime = //修改数据date
+        new Date().getHours() +
+        ":" +
+        new Date().getMinutes()
+    }, 1000);
+      },
+      beforeDestroy() {
+    if (this.timer) {
+      clearInterval(this.timer); // 在Vue实例销毁前，清除我们的定时器
+    }
+  },
+      mounted: function () {
+        api.addEventListener({
+            name: 'batterystatus'
+        }, function(ret, err) {
+            that.widts=ret.level+"%"
+        });
+          api.addEventListener({
+            name: 'myEvent'
+            }, function(ret, err) {
+              console.log(JSON.stringify(ret.value.key16))
+              that.tops=ret.value.key16
+          });
+          api.addEventListener({
+            name: 'myEvent'
+            }, function(ret, err) {
+              that.num=parseInt(ret.value.keyss1)
+              that.nums=ret.value.keyss2
+          });
+          if($api.getStorage("keyn")==undefined){
+            that.colors="#f0f8ff"
+          }else{
+            that.colors=$api.getStorage("keyn")
+          }
+          api.addEventListener({
+            name: 'myEvents'
+            }, function(ret, err) {
+              that.colors=ret.value.key2
+          });
+      },
+      methods: {
+        jian(){
+          if(that.num>12){
+            that.num--
+          }
+          api.sendEvent({
+              name: 'myEvent',
+              extra: {
+                  key1: that.num
+              }
+          });
+
+          var key ="keyns";
+          var user =that.num
+          $api.setStorage(key, user);
+        },
+        jians(){
+          if(that.num<40){
+            that.num++
+          }
+          var key ="keyns";
+          var user =that.num
+          $api.setStorage(key, user);
+        }
+      }
+    })
+  };
+
+</script>
+
+</html>

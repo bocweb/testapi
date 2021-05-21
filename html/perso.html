@@ -1,0 +1,476 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport"  content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+  <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+  <title>首页</title>
+  <script type="text/javascript" src="../script/flexible.js"></script>
+  <link rel="stylesheet" type="text/css" href="../css/api.css" />
+  <link rel="stylesheet" type="text/css" href="../css/list.css" />
+  <link rel="stylesheet" type="text/css" href="../css/style.css" />
+</head>
+
+<body>
+  <div class="home" id="app"  v-cloak>
+      <div class='topy' @click='returns'>
+          <img src='../image/icon_13.png'>
+          <div>个人资料</div>
+      </div>
+      <div class="chongzs">
+        <div>头像</div>
+          <div @click='photo'>
+            <img :src="gerenxinxs.avatar"/>
+            <img src="../image/icon_19.png" alt="">
+          </div>
+      </div>
+      <div class="chongzs">
+        <div>昵称</div>
+        <div @click="drawers = true">
+          <div>{{gerenxinxs.nickname}}</div>
+          <img src="../image/icon_19.png" alt="">
+        </div>
+      </div>
+      <div class="chongzs">
+        <div>性别</div>
+        <div @click="xingb">
+          <div>{{gerenxiny}}</div>
+          <img src="../image/icon_19.png" alt="">
+        </div>
+      </div>
+      <div class="chongzs">
+        <div>ID</div>
+        <div>
+          <div>{{gerenxinxs.id}}</div>
+        </div>
+      </div>
+      <div class="heightss"></div>
+      <div class="chongzs">
+        <div>手机号</div>
+        <div  @click="drawer = true">
+          <div>{{gerenxinxs.username=="0"?"请绑定手机号":gerenxinxs.username}}</div>
+          <img src="../image/icon_19.png" alt="">
+        </div>
+      </div>
+      <div class="chongzs">
+        <div>微信号</div>
+        <div @click='bang'>
+          <div>{{gerenxinxs.wx=="0"?"请绑定微信号":'已绑定'}}</div>
+          <img src="../image/icon_19.png" v-if='gerenxinxs.wx==0' alt="">
+        </div>
+      </div>
+      <div class="chongzs">
+        <div>QQ号</div>
+        <div @click='qqban'>
+          <div>{{gerenxinxs.qq=="0"?"请绑定QQ号":'已绑定'}}</div>
+          <img src="../image/icon_19.png" v-if='gerenxinxs.qq==0' alt="">
+        </div>
+      </div>
+      <!-- <el-dialog :visible.sync="dialogFormVisible">
+        <el-form>
+          <el-form-item label="昵称">
+            <el-input v-model="nickname" autocomplete="off"></el-input>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogFormVisible = false">取 消</el-button>
+          <el-button type="primary" @click='xiugai("昵称")'>确 定</el-button>
+        </div>
+      </el-dialog> -->
+      <el-drawer
+        title=""
+        :visible.sync="drawer"
+        size="50%"
+        :direction="direction"
+        :with-header="false">
+        <div class="hieghtsn"></div>
+      <input class="sinput" type="text" v-model='phone'  placeholder="请输入手机号" />
+  		<div class="sinputs">
+  			<input type="text" v-model='Verifications'  placeholder="请输入验证码" />
+  			<div @click='Verification' v-if='nums'>获取验证码</div>
+        <div v-else>{{num}}</div>
+  		</div>
+      <div class="dengl" @click='login'>立即绑定</div>
+      </el-drawer>
+
+      <el-drawer
+        title=""
+        :visible.sync="drawers"
+        size="50%"
+        :direction="direction"
+        :with-header="false">
+        <div class="hieghtsn"></div>
+      <input class="sinput" type="text" v-model="nickname"  placeholder="请输入昵称" />
+      <div class="dengl" @click='xiugai("昵称")'>确定</div>
+      </el-drawer>
+  </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/jquery-3.2.0.min.js"></script>
+<script type="text/javascript" src="../script/vue.min.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript" src="../script/swiper.min.js"></script>
+<script type="text/javascript" src="../script/index.js"></script>
+<script type="text/javascript">
+  apiready = function () {
+    app = new Vue({
+      el: '#app',
+      data: {
+          gerenxinxs:[],
+          dialogFormVisible:false,
+          gerenxiny:'',
+          nickname:"",
+          token:"",
+          phone:"",
+          Verifications:"",
+          value:"",
+          num:60,
+          drawers:false,
+          nums:true,
+          direction: 'btt',
+          drawer: false,
+      },
+      created: function () {
+          that = this
+
+      },
+      mounted: function () {
+        api.addEventListener({
+            name: 'keyback'
+        }, function(ret, err) {
+          api.sendEvent({
+              name: 'myEventhh',
+              extra: {
+                  key1: 's'
+              }
+          });
+          api.historyBack({
+              frameName: 'detail'
+          }, function(ret, err) {
+              if (!ret.status) {
+                  api.closeWin();
+              }
+          });
+        });
+        that.token = api.getPrefs({
+            sync: true,
+            key: 'key1'
+        });
+        that.gerenxinx();
+      },
+      methods: {
+        login:function(){
+          $api.get(
+            $config.phoneban, {
+              yzcode:that.Verifications,
+              phone: that.phone,
+              userid:that.token,
+            },
+            function(res) {
+                console.log(JSON.stringify(res))
+
+                if(res.code==2){
+    							$api.toast( res.msg, 500 )
+    						}else if(res.code==4){
+    							$api.toast( res.msg, 500 )
+    						}else if(res.code==3){
+    							$api.toast( res.msg, 500 )
+    						}else{
+                  that.drawer = false
+                  $api.toast( res.msg, 500 )
+                }
+            }
+          )
+        },
+        // 获取验证码
+          Verification: function(){
+            if(that.phone.length!=11){
+              $api.toast( "手机号不正确，请输入11位手机号", 500 )
+              return false
+            }
+            $api.post(
+              $config.Verificationn, {
+                phone: that.phone,
+              },
+              function(res) {
+                  console.log(JSON.stringify(res))
+                  if(res.code==1){
+                    $api.toast( res.msg, 500 )
+                    that.nums=false;
+                    setInterval(function(){
+                      if(that.num>=1){
+                        that.num--
+                      }else{
+                        that.nums=true;
+                        that.num=0
+                      }
+
+                    },1000)
+                  }else if(res.code==2){
+                    $api.toast( res.msg, 500 )
+                  }else{
+                    $api.toast( res.msg, 500 )
+                  }
+              }
+            )
+          },
+        qqban(){
+          if(that.gerenxinxs.qq!=0){
+            return false
+          }
+          var qq = api.require('QQPlus');
+          qq.login(function(ret, err) {
+            $api.showProgress();
+            $api.get(
+              $config.qqlogins, {
+                flag:0,
+                openid:ret.openId,
+                acctoken: ret.accessToken,
+              },
+              function(res) {
+                console.log(JSON.stringify(res))
+                $api.get(
+                  $config.qqbans, {
+                    openid:res.data.qqopenid,
+                    avatar:res.data.avatar,
+                    nickname: res.data.nickname,
+                    id:that.token==undefined?"":that.token,
+                  },
+                  function(resn) {
+                    api.hideProgress();
+                    if(resn.code==1){
+                      that.gerenxinx();
+                    }else{
+                      $api.toast( resn.msg, 500 )
+                    }
+
+                  }
+                )
+              }
+            )
+          });
+        },
+        xingb(){
+          api.actionSheet({
+            cancelTitle: '取消',
+            buttons: ['男', '女','保密']
+          }, function(ret, err) {
+            var index = ret.buttonIndex;
+            console.log(index)
+            if (index == 1) {
+              that.value="1"
+            } else if (index == 2) {
+              that.value="2"
+            }else{
+              that.value="0"
+            }
+            console.log(that.value)
+            $api.get(
+              $config.xiug, {
+                  id:that.token==undefined?"":that.token,
+                  sex:that.value,
+                  nickname:that.gerenxinxs.nickname,
+                  avatar:that.gerenxinxs.avatar,
+              },
+              function(response) {
+                console.log(JSON.stringify(response))
+                that.gerenxinx();
+              }
+            )
+          });
+        },
+        bang(){
+          if(that.gerenxinxs.wx!=0){
+            return false
+          }
+          var wx = api.require('wx');
+           wx.auth({
+               scope:"snsapi_userinfo"
+           }, function(ret, err) {
+             $api.showProgress();
+               if (ret.status) {
+                 $api.post(
+                   $config.weuxb, {
+                     flag:1,
+                     code: ret.code,
+                   },
+                   function(res) {
+
+                     setTimeout(function(){
+                       $api.get(
+                         $config.bangd, {
+                           userid:that.token,
+                           nickname:res.data.nickname,
+                           avatar: res.data.avatar,
+                           openid:res.data.wxopenid,
+                         },
+                         function(ress) {
+                           api.hideProgress();
+                           if(ress.code==1){
+                             that.gerenxinx();
+                           }else{
+                             $api.toast( ress.msg, 500 )
+                           }
+                         }
+                       )
+                     },500)
+
+                   }
+                 )
+               } else {
+                   alert(err.code);
+               }
+
+           });
+        },
+        xiugai(name){
+          if(name=="昵称"){
+            that.drawers=false;
+            $api.get(
+              $config.xiug, {
+                  id:that.token==undefined?"":that.token,
+                  nickname:that.nickname,
+                  avatar:that.gerenxinxs.avatar,
+                  sex:that.gerenxinxs.sex
+              },
+              function(response) {
+                that.gerenxinx();
+              }
+            )
+          }else{
+            that.drawers=false;
+            $api.get(
+              $config.xiug, {
+                  id:that.token==undefined?"":that.token,
+                  sex:that.value,
+                  nickname:that.gerenxinxs.nickname,
+                  avatar:that.gerenxinxs.avatar,
+              },
+              function(response) {
+                that.gerenxinx();
+              }
+            )
+          }
+        },
+        //上传图片
+        imgUpFn: function() {
+          api.getPicture({
+            sourceType: 'library',
+            encodingType: 'jpg',
+            mediaValue: 'pic',
+            destinationType: 'url',
+            quality: 100,
+            allowEdi:true,
+            targetWidth: 100,
+          }, function(ret, err) {
+            api.ajax({
+                url: 'http://shuyueyun.cn/admin/user/uploadpic',
+                method: 'post',
+                data: {
+                    files: {
+                        file: ret.data
+                    }
+                }
+            }, function(ret, err) {
+                $api.get(
+                  $config.xiug, {
+                      id:that.token==undefined?"":that.token,
+                      nickname:that.gerenxinxs.nickname,
+                      avatar:'http://shuyueyun.cn'+err.body,
+                      sex:that.gerenxinxs.sex
+                  },
+                  function(response) {
+                    that.gerenxinx();
+                  }
+                )
+            });
+          });
+      },
+        //拍照
+        getPicFn() {
+          console.log(JSON.stringify(response))
+          api.getPicture({
+            sourceType: 'camera',
+            encodingType: 'jpg',
+            mediaValue: 'pic',
+            destinationType: 'url',
+            quality: 100,
+            allowEdi:true,
+            targetWidth: 100,
+          }, function(ret, err) {
+            api.ajax({
+                url: 'http://shuyueyun.cn/admin/user/uploadpic',
+                method: 'post',
+                data: {
+                    files: {
+                        file: ret.data
+                    }
+                }
+            }, function(ret, err) {
+              $api.get(
+                $config.xiug, {
+                    id:that.token==undefined?"":that.token,
+                    nickname:that.gerenxinxs.nickname,
+                    avatar:'http://shuyueyun.cn/'+err.body,
+                    sex:that.gerenxinxs.sex
+                },
+                function(response) {
+
+                  that.gerenxinx();
+                }
+              )
+            });
+          });
+        },
+        photo(){
+          api.actionSheet({
+            cancelTitle: '取消',
+            buttons: ['拍照', '图库']
+          }, function(ret, err) {
+            var index = ret.buttonIndex;
+            if (index === 1) {
+              that.getPicFn()
+            } else if (index === 2) {
+              that.imgUpFn()
+            }
+          });
+        },
+        returns(){
+          api.sendEvent({
+              name: 'myEventhh',
+              extra: {
+                  key1: 's'
+              }
+          });
+          api.historyBack({
+              frameName: 'detail'
+          }, function(ret, err) {
+                  api.closeWin();
+          });
+        },
+        gerenxinx(){
+          $api.get(
+            $config.data, {
+                id:that.token==undefined?"":that.token,
+            },
+            function(response) {
+              console.log(JSON.stringify(response))
+                that.gerenxinxs=response.data
+                if(that.gerenxinxs.sex==0){
+                  that.gerenxiny="保密"
+                }else if(that.gerenxinxs.sex==1){
+                  that.gerenxiny="男"
+                }else{
+                  that.gerenxiny="女"
+                }
+            }
+          )
+        },
+      }
+    })
+  };
+
+</script>
+
+</html>

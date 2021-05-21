@@ -1,0 +1,214 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport"
+    content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+  <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+  <title>首页</title>
+  <script type="text/javascript" src="../script/flexible.js"></script>
+  <link rel="stylesheet" type="text/css" href="../css/api.css" />
+  <link rel="stylesheet" type="text/css" href="../css/details.css" />
+  <link rel="stylesheet" type="text/css" href="../css/style.css" />
+</head>
+
+<body>
+  <div class="home" id="app"  v-cloak>
+      <div class="top">
+        <img src="../image/icon_13.png" @click='returns'/>
+        <div>目录</div>
+      </div>
+
+      <ul class="uls">
+        <div style="display:flex;justify-content: space-between;"><span>目录（共{{lists.total}}章）</span>
+          <!-- <select  onchange='phenyln()'>
+                <option class='numberss' for='(index,items) in num' value='{{items.page+1}}'>{{items.title}}章</option>
+          </select> -->
+          <div @click='zhengdx' style='font-size:15px; color'>
+            <div v-if='zxu==0'>&#8595;正序</div>
+            <div v-else>&#8593;倒序</div>
+          </div>
+        </div>
+        <li  v-for='(item,index) in listss' :key='index' @click='uied(item.id,0,lists.id)'>{{item.title}}
+          <img src="../image/user_vip_1.png" v-if="item.isvip==1" class='imagen' alt="">
+        </li>
+
+      </ul>
+
+  </div>
+</body>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript" src="../script/jquery-3.2.0.min.js"></script>
+<script type="text/javascript" src="../script/swiper.min.js"></script>
+<script type="text/javascript" src="../script/vue.min.js"></script>
+<script type="text/javascript" src="../script/share-config.js"></script>
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript" src="../script/flexible.js"></script>
+<script type="text/javascript" src="../script/api.extend.js"></script>
+<script type="text/javascript" src="../script/index.js"></script>
+<script type="text/javascript">
+  apiready = function () {
+    //滚动到底部加载更多
+    api.addEventListener({
+      name: 'scrolltobottom',
+      extra: {
+        threshold: 0 //设置距离底部多少距离时触发，默认值为0，数字类型
+      }
+    }, function (ret, err) {
+      that.pages++
+        that.phenyls();
+        console.log(that.pages)
+    });
+    app = new Vue({
+      el: '#app',
+      data: {
+          lists:[],
+          listss:[],
+          pages:1,
+          tokeny:"",
+          token:[],
+          zxu:0,
+          idns:api.pageParam.id,
+      },
+      created: function () {
+          that = this
+      },
+      mounted: function () {
+        api.addEventListener({
+            name: 'myEventhh'
+        }, function(ret, err) {
+            if(ret.value.key1=="s"){
+                history.go(0)
+                api.sendEvent({
+                    name: 'myEvent',
+                    extra: {
+                        key1: 'y'
+                    }
+                });
+                return false
+            }
+        });
+        that.tokeny = api.getPrefs({
+            sync: true,
+            key: 'key1y'
+        });
+        that.token = api.getPrefs({
+            sync: true,
+            key: 'key1'
+        });
+          that.phenyls();
+
+      },
+      methods: {
+        zhengdx(){
+          if(that.zxu==0){
+            that.zxu=1
+          }else{
+            that.zxu=0
+          }
+          that.phenyls();
+        },
+        uied(idn,num,idss){
+          console.log(JSON.stringify(that.token))
+            $api.post(
+              $config.xiangqi, {
+                bid:that.idns,
+                userid:that.token==""?that.tokeny:that.token,
+                cid:idn,
+                startread:num,
+              },
+              function(res) {
+console.log(JSON.stringify(that.token))
+                  console.log(JSON.stringify(res))
+                  if(res.code==1){
+                    $api.toast( res.msg, 500 )
+                    api.sendEvent({
+                        name: 'myEventhh',
+                        extra: {
+                            key1: 's'
+                        }
+                    });
+                    api.closeWin({
+                         name:"book"
+                    });
+                    api.openWin({
+                      name: 'book',
+                      url: 'book.html',
+                      pageParam: {
+                          userid:that.token==undefined?"":that.token,
+                          bid: that.idns,
+                          cid: idn,
+                          startread: num,
+                      }
+                    });
+                  }else if(res.code==2){
+                    $api.toast( res.msg, 500 )
+                    api.openWin({
+                      name: 'login',
+                      url: 'login.html'
+                    });
+                  }else if(res.code==3){
+                    $api.toast( res.msg, 500 )
+                  }else if(res.code==4){
+                    $api.toast( res.msg, 500 )
+                    api.openWin({
+                      name: 'Signss',
+                      url: 'Signss.html'
+                    });
+                  }
+              }
+            )
+
+        },
+        returns(){
+          api.historyBack({
+              frameName: 'detail'
+          }, function(ret, err) {
+              if (!ret.status) {
+                  api.closeWin();
+              }
+          });
+        },
+        dashan(){
+          $api.post(
+            $config.dashang,{},
+            function(res) {
+              that.dash=res.data
+              console.log(JSON.stringify(that.dash),'ssssssssssssss')
+            }
+          )
+        },
+        // 详情信息
+        phenyls(){
+          $api.post(
+            $config.jiarushujs, {
+                id: that.idns,
+                page:that.pages,
+                rows:100,
+                sequence:that.zxu,
+                status:that.pages*100,
+            },
+            function(response) {
+              that.lists = response.data
+                if(that.pages<=response.data.totalpage){
+                    if(that.pages==1){
+                        that.listss = response.data.chapter
+                    }else{
+                        console.log(that.lists)
+                        that.listss=that.listss.concat(response.data.chapter)
+                    }
+                    console.log(that.lists)
+                }else{
+                    that.loadMore=false
+                }
+            }
+          )
+        },
+      }
+    })
+  };
+
+</script>
+
+</html>

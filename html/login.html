@@ -1,0 +1,322 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport"
+    content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+  <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+  <title>首页</title>
+  <script type="text/javascript" src="../script/flexible.js"></script>
+  <link rel="stylesheet" type="text/css" href="../css/api.css" />
+  <link rel="stylesheet" type="text/css" href="../css/login.css" />
+</head>
+
+<body>
+  <div class="home" id="app"  v-cloak>
+      <div class="topssn">
+        <img src="../image/images.png" />
+        <img src="../image/icon_13.png" @click='returns'/>
+      </div>
+      <div class="login_top">
+        注册/登陆
+      </div>
+      <div style="color:#ccc;padding-left: 40px;margin-bottom:10px;">登陆后开始使用</div>
+      <input class="sinput" type="text" v-model='phone'  placeholder="请输入手机号" />
+		<div class="sinputs">
+			<input type="text" v-model='Verifications'  placeholder="请输入验证码" />
+			<div @click='Verification' v-if='nums'>获取验证码</div>
+      <div v-else>{{num}}</div>
+		</div>
+		<div class="dengl" @click='login'>立即登录</div>
+    <div class="tdengl">请通过手机短信验证或者第三方账号登陆注册</div>
+		<div class="Navigation">
+			<div @click='qqlogin'>
+				<img src="../image/QQs.jpg">
+				<span>QQ</span>
+			</div>
+			<div @click='weix'>
+				<img src="../image/weix.jpg">
+				<span>微信</span>
+			</div>
+		</div>
+		<div class='bottons'>
+		    <span>点击登录即表示已同意<span><span class='colorn' @click='yingsw'>《用户协议》</span>和<span class='colorn' @click='yings'>《隐私政策》</span></span></text>
+		</div>
+  </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/jquery-3.2.0.min.js"></script>
+<script type="text/javascript" src="../script/vue.min.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript" src="../script/swiper.min.js"></script>
+<script type="text/javascript">
+  apiready = function () {
+    app = new Vue({
+      el: '#app',
+      data: {
+          Verifications:'',
+          phone:"",
+          num:60,
+          nums:true,
+          lon:api.pageParam.lon,
+          registrationId:"",
+      },
+      created: function () {
+          that = this
+
+      },
+      mounted: function () {
+        console.log(that.lon)
+        // 推送唯一标识
+        var ajpush = api.require('ajpush');
+        ajpush.getRegistrationId(function(ret) {
+            that.registrationId = ret.id;
+            console.log(that.registrationId)
+        });
+
+      },
+      methods: {
+        // qq登陆
+        qqlogin(){
+          var qq = api.require('QQPlus');
+          var channel = api.channel;
+          qq.login(function(ret, err) {
+            $api.showProgress();
+            $api.get(
+              $config.qqlogins, {
+                flag:0,
+                openid:ret.openId,
+                acctoken: ret.accessToken,
+                channel:994019,
+                registration_id:that.registrationId
+              },
+              function(res) {
+                api.hideProgress();
+                console.log(JSON.stringify(res.data),"sssssss");
+                  if(res.code==2){
+                    $api.toast( res.msg, 500 )
+                  }else{
+                    $api.toast( res.msg, 500 )
+
+                    console.log(JSON.stringify(res.data),"sssssss");
+                    var key ="key";
+                    var user =res.data
+                    $api.setStorage(key,user);
+                    api.setPrefs({
+                        key: 'key1',
+                        value: user.id
+                    });
+                    api.sendEvent({
+                        name: 'myEventhh',
+                        extra: {
+                            key1: 's'
+                        }
+                    });
+                    if(that.lon==1){
+                      api.historyBack({
+                          frameName: 'detail'
+                      }, function(ret, err) {
+                          if (!ret.status) {
+                              api.closeWin();
+                          }
+                      });
+                      return false
+                    }else{
+                      api.historyBack({
+                          frameName: 'detail'
+                      }, function(ret, err) {
+                          if (!ret.status) {
+                              api.closeWin();
+                          }
+                      });
+                    }
+                  }
+              }
+            )
+          });
+
+
+        },
+        // 用户协议和隐私政策
+        yings(){
+          api.openWin({
+            name: 'xiyi',
+            url: 'xiyi.html'
+          });
+        },
+        yingsw(){
+          api.openWin({
+            name: 'yings',
+            url: 'yings.html'
+          });
+        },
+        // 微信登陆
+         weix(){
+           var wx = api.require('wx');
+           var channel = api.channel;
+            wx.auth({
+                scope:"snsapi_userinfo"
+            }, function(ret, err) {
+              $api.showProgress();
+              console.log(JSON.stringify(ret.code))
+                if (ret.status) {
+                  $api.post(
+                    $config.weixlogin, {
+                      flag:0,
+                      code: ret.code,
+                      channel:994019,
+                      registration_id:that.registrationId
+                    },
+                    function(res) {
+                      api.hideProgress();
+                      console.log(JSON.stringify(res.data),"sssssss");
+                        if(res.code==2){
+            							$api.toast( res.msg, 500 )
+            						}else{
+                          $api.toast( res.msg, 500 )
+                          console.log(JSON.stringify(res.data),"sssssss");
+                          var key ="key";
+                          var user =res.data
+                          $api.setStorage(key,user);
+                          api.setPrefs({
+                              key: 'key1',
+                              value: user.id
+                          });
+                          api.sendEvent({
+                              name: 'myEventhh',
+                              extra: {
+                                  key1: 's'
+                              }
+                          });
+                          if(that.lon==1){
+                            api.historyBack({
+                                frameName: 'detail'
+                            }, function(ret, err) {
+                                if (!ret.status) {
+                                    api.closeWin();
+                                }
+                            });
+                            return false
+                          }else{
+                            api.historyBack({
+                                frameName: 'detail'
+                            }, function(ret, err) {
+                                if (!ret.status) {
+                                    api.closeWin();
+                                }
+                            });
+                          }
+
+                        }
+                    }
+                  )
+                } else {
+                    alert(err.code);
+                }
+
+            });
+         },
+        //  返回
+        returns(){
+          api.historyBack({
+              frameName: 'detail'
+          }, function(ret, err) {
+              if (!ret.status) {
+                  api.closeWin();
+              }
+          });
+        },
+        // 手机号登陆
+        login:function(){
+          var channel = api.channel;
+          $api.post(
+            $config.login, {
+              yzcode:that.Verifications,
+              phone: that.phone,
+              channel:994019,
+              registration_id:that.registrationId
+            },
+            function(res) {
+                console.log(JSON.stringify(res))
+                if(res.code==2){
+    							$api.toast( res.msg, 500 )
+    						}else if(res.code==4){
+    							$api.toast( res.msg, 500 )
+    						}else if(res.code==3){
+    							$api.toast( res.msg, 500 )
+    						}else{
+                  $api.toast( res.msg, 500 )
+                  console.log(JSON.stringify(res.data),"sssssss");
+                  // $api.setStorage("key",res.data);
+                  var key ="key";
+                  var user =res.data
+                  $api.setStorage(key, user);
+                  api.setPrefs({
+                      key: 'key1',
+                      value: user.id
+                  });
+                  api.sendEvent({
+                      name: 'myEventhh',
+                      extra: {
+                          key1: 's'
+                      }
+                  });
+                  if(that.lon==1){
+                    api.historyBack({
+                        frameName: 'detail'
+                    }, function(ret, err) {
+                        if (!ret.status) {
+                            api.closeWin();
+                        }
+                    });
+                    return false
+                  }else{
+                    api.historyBack({
+                        frameName: 'detail'
+                    }, function(ret, err) {
+                        if (!ret.status) {
+                            api.closeWin();
+                        }
+                    });
+                  }
+                }
+            }
+          )
+        },
+        // 获取验证码
+          Verification: function(){
+            $api.post(
+              $config.Verificationn, {
+                phone: that.phone,
+              },
+              function(res) {
+                  console.log(JSON.stringify(res))
+                  if(res.code==1){
+                    $api.toast( res.msg, 500 )
+                    that.nums=false;
+                    setInterval(function(){
+                      if(that.num>=1){
+                        that.num--
+                      }else{
+                        that.nums=true;
+                        that.num=0
+                      }
+
+                    },1000)
+                  }else if(res.code==2){
+                    $api.toast( res.msg, 500 )
+                  }else{
+                    $api.toast( res.msg, 500 )
+                  }
+              }
+            )
+          }
+      }
+    })
+  };
+
+</script>
+
+</html>

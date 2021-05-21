@@ -1,0 +1,310 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport"
+    content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+  <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+  <title>首页</title>
+  <script type="text/javascript" src="../script/flexible.js"></script>
+  <link rel="stylesheet" type="text/css" href="../css/api.css" />
+  <link rel="stylesheet" type="text/css" href="../css/Signss.css" />
+</head>
+
+<body>
+  <div class="home" id="app"  v-cloak>
+    <div class="container">
+      <div class='top'>
+          <img src='../image/icon_13.png' @click='returns'>
+          <img class='lieb' :src="$api.getStorage('key')==undefined?'':gerenxinxs.avatar">
+          <div>
+              <div>{{gerenxinxsys.nickname}}</div>
+              <div>ID:{{gerenxinxs.id}}</div>
+          </div>
+          <div>余额：<span class='colors'>{{gerenxinxs.score}}</span>书币</div>
+      </div>
+      <div class='chong'>充值</div>
+      <div class='jinge'>
+          <div>请选择充值金额<span class='colorsz'>(1元=100阅读币)</span></div>
+          <div class='gong'>
+            <!-- <div :class='item.id==idn?"moss":"mos"'  @click='zhifn(item.id)' v-for='(item,index) in lists'>
+                <div  :class='item.id==idn?"mtext":"big"'>{{item.titilea}}</div>
+                <div  :class='item.id==idn?"mtext":""'>{{item.titileb}}</div>
+                <div  :class='item.id==idn?"mtext":""'>{{item.titilec}}</div>
+            </div> -->
+              <div :class='1==idn?"moss":"mos"'  @click='zhifn(1)'>
+                  <div  :class='1==idn?"mtext":"big"'>30元</div>
+                  <div  :class='1==idn?"mtext":""'>3000书币</div>
+                  <div  :class='1==idn?"mtext":""'></div>
+              </div>
+              <div :class='2==idn?"moss":"mos"'  @click='zhifn(2)'>
+                  <div  :class='2==idn?"mtext":"big"'>50元</div>
+                  <div  :class='2==idn?"mtext":""'>5000+3000书币</div>
+                  <div  :class='2==idn?"mtext":""'>多送30元</div>
+              </div>
+              <div :class='idn==3?"moss":"mos"'  @click='zhifn(3)'>
+                  <div  :class='idn==3?"mtext":"big"'>98元</div>
+                  <div  :class='idn==3?"mtext":""'>9800+7500书币</div>
+                  <div  :class='idn==3?"mtext":""'>多送75元</div>
+              </div>
+              <div :class='4==idn?"moss":"mos"'  @click='zhifn(4)'>
+                  <div  :class='4==idn?"mtext":"big"'>198元</div>
+                  <div  :class='4==idn?"mtext":""'>19800+19800书币</div>
+                  <div  :class='4==idn?"mtext":""'>多送198元</div>
+              </div>
+              <div :class='5==idn?"moss":"mos"'  @click='zhifn(5)'>
+                  <div  :class='5==idn?"mtext":"big"'>年费VIP会员</div>
+                  <div  :class='5==idn?"mtext":""'>388元</div>
+                  <div  :class='5==idn?"mtext":""'>全年免费看</div>
+              </div>
+          </div>
+      </div>
+      <div class='btn'>
+        <div  @click='pingg()'>确认支付</div>
+          <!-- <div  @click='zhif()'>支付宝支付</div>
+          <div @click='weixdiaoq()'>微信支付</div> -->
+      </div>
+      <div class='content'>*书币属于虚拟商品，充值后无法退款，请理解</div>
+      <div class='content'>*有任何问题请于工作人员联系<span>（咨询时请提供ID：79977）</span></div>
+      <div class='content'>*联系电话：0571-85260960</div>
+      <div class='content'>*工作时间：9:00-17:30</div>
+  </div>
+  </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/jquery-3.2.0.min.js"></script>
+<script type="text/javascript" src="../script/vue.min.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript" src="../script/swiper.min.js"></script>
+<script type="text/javascript">
+  apiready = function () {
+    app = new Vue({
+      el: '#app',
+      data: {
+        lists:[],
+        openid:"",
+        idn:3,
+        ids:0,
+        tokeny:"",
+        username:9,
+        gerenxinxs:[],
+        gerenxinxsys:[],
+      },
+      created: function () {
+          that = this
+
+      },
+      mounted: function () {
+        that.tokeny=api.getPrefs({
+            sync: true,
+            key: 'key1y'
+        });
+        api.addEventListener({
+            name: 'keyback'
+        }, function(ret, err) {
+          api.sendEvent({
+              name: 'myEventhh',
+              extra: {
+                  key1: 's'
+              }
+          });
+          api.historyBack({
+              frameName: 'detail'
+          }, function(ret, err) {
+              if (!ret.status) {
+                  api.closeWin();
+              }
+          });
+        });
+          // that.vip();
+          that.gerenxinx();
+          that.gerenxinxys();
+          this.idn=3;
+      },
+      methods: {
+        pingg(){
+          console.log(that.idn)
+          $api.showProgress();
+          $api.get(
+            $config.appleid, {
+                id:that.idn,
+                userid:$api.getStorage("key")==undefined?that.tokeny:$api.getStorage("key").id,
+            },
+            function(responseus,errs) {
+              console.log(JSON.stringify(responseus))
+              var iap = api.require('iap');
+              iap.purchase({
+                  productId: 'com.yykj1168.sezs'+that.username
+              }, function(ret, err) {
+
+                    console.log(JSON.stringify(ret));
+                    $api.get(
+                      $config.apple, {
+                          order_num:responseus.order_num,
+                          receipt:ret.receipt,
+                          state:ret.state,
+                          productId:ret.productId,
+                          transactionId:ret.transactionId,
+                      },
+                      function(response) {
+                        api.hideProgress();
+                        that.vip();
+                        that.gerenxinx();
+                        that.gerenxinxys();
+                      }
+                    )
+              });
+            }
+          )
+
+        },
+        gerenxinxys(){//获取支付信息
+          $api.get(
+            $config.data, {
+                id:$api.getStorage("key")==undefined?that.tokeny:$api.getStorage("key").id,
+            },
+            function(response) {
+              console.log(JSON.stringify(response),"sss")
+                that.gerenxinxsys=response.data
+            }
+          )
+        },
+        weixdiaoq(){//微信支付
+          api.openWin({
+            name: 'login',
+            url: "http://shuyueyun.cn/admin/pay/wechatAppleH5?id="+this.idn+"&userid="+$api.getStorage("key").id
+          });
+          // $api.post(
+          //   $config.weixs, {
+          //     id: this.idn,
+          //     userid:$api.getStorage("key").openid==undefined?"":$api.getStorage("key").id
+          //   },
+          //   function(res) {
+          //     console.log(JSON.stringify(res))
+          //     if(res.code==1){
+          //       var wxPay  = api.require('wxPay');
+          //         wxPay.payOrder({
+          //             apiKey:res.data.appid,
+          //             orderId: res.data.prepayid,
+          //             mchId: res.data.partnerid,
+          //             nonceStr: res.data.noncestr,//1
+          //             timeStamp: res.data.timestamp,//1
+          //             package: "Sign=WXPay",//1
+          //             sign: res.data.sign//1
+          //         }, function(ret, err) {
+          //           that.vip();
+          //           that.gerenxinx();
+          //           api.sendEvent({
+          //               name: 'myEventhh',
+          //               extra: {
+          //                   key1: 's'
+          //               }
+          //           });
+          //         });
+          //     }
+          //
+          //
+          //   }
+          // )
+        },
+        zhifn(ids){
+            this.idn=ids
+            if(ids==1){
+              that.username=3;
+            }else if(ids==2){
+              that.username=5;
+            }else if(ids==3){
+              that.username=9;
+            }else if(ids==4){
+              that.username=19;
+            }else{
+              that.username="3s";
+            }
+
+        },
+        zhif(){//支付宝支付
+          alert(this.idn)
+          api.openWin({
+            name: 'login',
+            url: "https://shuyueyun.cn/admin/pay/alipayAppleH5?id="+this.idn+"&userid="+$api.getStorage("key").id
+          });
+          // $api.post(
+          //   $config.zhifub, {
+          //     id: this.idn,
+          //     userid:$api.getStorage("key").openid==undefined?"":$api.getStorage("key").id
+          //   },
+          //   function(res) {
+          //     console.log(JSON.stringify(res))
+          //     var aliPayPlus = api.require('aliPayPlus');
+          //     aliPayPlus.payOrder({
+          //         orderInfo: res.data
+          //         }, function(ret, err) {
+          //           that.vip();
+          //           that.gerenxinx();
+          //           api.sendEvent({
+          //               name: 'myEventhh',
+          //               extra: {
+          //                   key1: 's'
+          //               }
+          //           });
+          //     });
+          //   }
+          // )
+        },
+        returns(){
+          api.sendEvent({
+              name: 'myEventhh',
+              extra: {
+                  key1: 's'
+              }
+          });
+          api.historyBack({
+              frameName: 'detail'
+          }, function(ret, err) {
+              if (!ret.status) {
+                  api.closeWin();
+              }
+          });
+        },
+        gerenxinx(){
+          $api.post(
+            $config.gerenxinxss, {
+                userid:$api.getStorage("key")==undefined?"":$api.getStorage("key").id,
+            },
+            function(response) {
+            //console.log(JSON.stringify(response))
+                that.gerenxinxs=response.data
+            }
+          )
+        },
+        gerenxinx(){
+          $api.post(
+            $config.gerenxinxss, {
+                userid:$api.getStorage("key")==undefined?that.tokeny:$api.getStorage("key").id,
+            },
+            function(response) {
+            //console.log(JSON.stringify(response))
+                that.gerenxinxs=response.data
+            }
+          )
+        },
+        vip(){
+          $api.post(
+            $config.zhifufangs, {
+            },
+            function(response) {
+              console.log(JSON.stringify(response))
+                that.lists =response.data
+                that.idn=that.lists[3].id
+            }
+          )
+       },
+      }
+    })
+  };
+
+</script>
+
+</html>

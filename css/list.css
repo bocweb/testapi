@@ -1,0 +1,215 @@
+body{
+  background: #eeeeee;
+  height: 100%;
+}
+.topy{
+    width: 100%;
+    padding: 20px 20px;
+    display: flex;
+    margin-top: 10px;
+    justify-content: space-between;
+    box-sizing: border-box;
+}
+.sinputs{
+  color: #000000;
+  margin-top: 35px;
+  height: 45px;
+  width: 80%;
+  margin: 0 10%;
+  box-sizing: border-box;
+  display: flex;
+}
+.sinputs input{
+  height: 45px;
+  width: 60%;
+  padding-left: 10px;
+  border-bottom: 1px solid #CCCCCC;
+  box-sizing: border-box;
+}
+.sinputs div{
+  width: 30%;
+  height: 35px;
+  background-color: #007AFF;
+  text-align: center;
+  border-radius: 15px;
+  line-height: 35px;
+  margin-left: 10%;
+  margin-top: 10px;
+  color: #FFFFFF;
+}
+.sinput{
+  color: #000000;
+  margin-top: 15px;
+  height: 45px;
+  width: 80%;
+  margin-top: 20px;
+  padding-left: 10px;
+  margin: 0 10%;
+  border-bottom: 1px solid #CCCCCC;
+  box-sizing: border-box;
+}
+.dengl{
+  width: 70%;
+  height: 40px;
+  border-radius:40px;
+  background-color: #007AFF;
+  text-align: center;
+  line-height: 40px;
+  font-size:18px;
+  font-family:PingFang SC;
+  margin: 100px auto 0;
+  font-weight:500;
+  color:rgba(255,255,255,1);
+}
+.topy img{
+    width: 15px;
+    height: 25px;
+}
+.topy div{
+    width: 100%;
+    line-height: 30px;
+    text-align: center;
+    margin-left: -30px;
+    font-size: 15px;
+}
+.top{
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 15px;
+  box-sizing: border-box;
+  background: #ffffff;
+}
+.top div img{
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
+  margin-top: 25px;
+  border-radius: 50%;
+}
+.top_top{
+  display: flex;
+}
+.top div div{
+  margin-top: 25px;
+}
+.top div div div{
+  margin-top: 0px;
+}
+.top div div div:nth-child(2){
+  margin-top: 10px;
+}
+.top img:nth-child(2){
+  width: 20px;
+  margin-top: 35px;
+  height: 30px;
+}
+.chongz{
+  display: flex;
+  background: #ffffff;
+  height: 60px;
+  line-height: 60px;
+  justify-content: space-between;
+  padding: 0 10px;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.chongzs{
+  display: flex;
+  background: #ffffff;
+  height: 60px;
+  line-height: 60px;
+  justify-content: space-between;
+  padding: 0 10px;
+  border-bottom: 1px solid #eeeeee;
+}
+
+
+.chongz img{
+  width: 10px;
+  height: 20px;
+  margin-top: 20px;
+}
+.hieghtsn{
+  height: 30px;
+}
+.chongz div img{
+  width: 30px;
+  height: 30px;
+  margin-top: 15px;
+  margin-right: 10px;
+
+}
+.chongzs div img:nth-child(1){
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 15px;
+  margin-top: 5px;
+}
+.chongzs div img:nth-child(2){
+  width: 10px;
+  height: 20px;
+  float: right;
+  margin-top: 20px;
+}
+.chongzs div div{
+  display: inline-block;
+  color: #ccc;
+  margin-right: 15px;
+}
+.chongz div{
+  display: flex;
+}
+.chongz div:nth-child(2){
+  background: #508BF7;
+  color: #ffffff;
+  padding: 5px 15px;
+  height: 30px;
+  margin-top: 15px;
+  box-sizing: border-box;
+  line-height: 20px;
+  display: inline-block;
+  border-radius: 10px;
+}
+.heightss{
+  height: 15px;
+  width: 100%;
+  background: #eeeeee;
+}
+.login{
+  width: 100%;
+  height: 216px;
+  background-image: url(../image/images.png) no-repeat;
+}
+.topssn img:nth-child(1){
+  width: 100%;
+  height: 160px;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.topssn{
+  height: 160px;
+}
+.topssn img:nth-child(2){
+  position: absolute;
+  width: 20px;
+  height: 30px;
+  left: 10px;
+  top: 20px;
+  z-index: 10;
+}
+.home{
+  background: #ffffff;
+}
+.sbutton{
+  width: 80%;
+  margin-left: 10%;
+  height: 40px;
+  background: #508BF7;
+  text-align: center;
+  margin-top: 20px;
+  line-height: 40px;
+  outline:none;
+  border-radius: 30px;
+}

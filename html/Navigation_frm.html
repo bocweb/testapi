@@ -1,0 +1,120 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport"
+    content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+  <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+  <title>导航内容</title>
+  <script type="text/javascript" src="../script/flexible.js"></script>
+  <link rel="stylesheet" type="text/css" href="../css/api.css" />
+  <link rel="stylesheet" type="text/css" href="../css/login.css" />
+  <link rel="stylesheet" type="text/css" href="../css/main.css" />
+</head>
+
+<body>
+  <div class="home" id="app"  v-cloak>
+    <div class='top' @click='returns'>
+        <img src='../image/icon_13.png' >
+        <div>{{names}}</div>
+    </div>
+    <div class="jing_bot"  v-for='(item,index) in homen1' @click="details(item.id)">
+      <img :src="item.image">
+      <div>
+        <div>{{item.title}}</div>
+        <div>{{item.desc}}</div>
+        <div v-if='names=="免费"'>限免时间：{{item.free_stime+"~"+item.free_etime}}</div>
+        <div v-else>{{item.zhuishu}}人在追</div>
+      </div>
+    </div>
+  </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/jquery-3.2.0.min.js"></script>
+<script type="text/javascript" src="../script/vue.min.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript" src="../script/swiper.min.js"></script>
+<script type="text/javascript">
+  apiready = function () {
+
+    app = new Vue({
+      el: '#app',
+      data: {
+          homen1:[],
+          pages:1,
+          names:api.pageParam.name
+      },
+      created: function () {
+          that = this
+
+      },
+      mounted: function () {
+          that.homes();
+      },
+      methods: {
+        details(ids){
+          api.openWin({
+            name: 'details',
+            url: 'details.html',
+            pageParam: {
+                id: ids,
+                lon:api.pageParam.lon==undefined?"":api.pageParam.lon.openid
+            }
+          });
+  			},
+        returns(){
+          api.historyBack({
+              frameName: 'detail'
+          }, function(ret, err) {
+                  api.closeWin();
+          });
+        },
+          homes(){
+            var nums="";
+            if(that.names=="排行"){
+              nums=1
+            }
+            $api.post(
+              $config.Editor, {
+                 page:that.pages,
+                 tj:api.pageParam.tj,
+                 limit:10,
+                 start:(that.pages-1)*10,
+                 xstype:api.pageParam.xstype,
+                 paihang:nums,
+                 isfree:api.pageParam.isfree,
+                 gender: api.pageParam.gender==1?"male":"female",
+              },
+              function(res) {
+                  console.log(JSON.stringify(res.totalpage),"新书推荐")
+                  if(that.pages<=res.totalpage){
+                      if(that.pages==1){
+                          that.homen1 = res.data.data
+                      }else{
+                          that.homen1=that.homen1.concat(res.data.data)
+                          console.log(JSON.stringify(that.homen1),"新书推荐")
+                      }
+                  }
+              }
+            )
+          }
+      }
+    })
+    //滚动到底部加载更多
+    api.addEventListener({
+      name: 'scrolltobottom',
+      extra: {
+        threshold: 0 //设置距离底部多少距离时触发，默认值为0，数字类型
+      }
+    }, function (ret, err) {
+      that.pages++
+        that.homes();
+        console.log(that.pages)
+    });
+  };
+
+</script>
+
+</html>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<security>
+  <item name="wxPay_appId" value="wx5e9f078261cc3d15"/>
+  <item name="wxPay_mchId" value="1524193501"/>
+  <item name="wxPay_partnerKey" value="dIwdeSFesD8gkxivngjey23kn38kcnls"/>
+  <item name="wxPay_notifyUrl" value="http://shuyueyun.cn/admin/pay/wechatpayreturns"/>
+  
+</security>

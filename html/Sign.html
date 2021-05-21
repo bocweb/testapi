@@ -1,0 +1,126 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport"
+    content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+  <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+  <title>首页</title>
+  <script type="text/javascript" src="../script/flexible.js"></script>
+  <link rel="stylesheet" type="text/css" href="../css/api.css" />
+  <link rel="stylesheet" type="text/css" href="../css/container.css" />
+</head>
+
+<body>
+  <div class="home" id="app"  v-cloak>
+    <div class="container">
+      <div class='top' @click='returns'>
+          <img src='../image/icon_13.png'>
+          <div>签到</div>
+      </div>
+       <!-- 人气作品 -->
+      <div class='week'>
+          <img src='../image/download.png'>
+      </div>
+      <div class='qian'>签到送礼</div>
+      <div  class='qians'>每日签到可获得30-60书币奖励</div>
+      <div class='dianj' @click='qiand' v-if='qian==0'><div>立即签到</div></div>
+      <div class='dianj' v-else><div>已签到</div></div>
+  </div>
+  </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/jquery-3.2.0.min.js"></script>
+<script type="text/javascript" src="../script/vue.min.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript" src="../script/swiper.min.js"></script>
+<script type="text/javascript">
+  apiready = function () {
+    app = new Vue({
+      el: '#app',
+      data: {
+        token:[],
+        qian:0,
+      },
+      created: function () {
+          that = this
+
+      },
+      mounted: function () {
+        api.addEventListener({
+            name: 'keyback'
+        }, function(ret, err) {
+          api.sendEvent({
+              name: 'myEventhh',
+              extra: {
+                  key1: 's'
+              }
+          });
+          api.historyBack({
+              frameName: 'detail'
+          }, function(ret, err) {
+              if (!ret.status) {
+                  api.closeWin();
+              }
+          });
+        });
+        that.token = api.getPrefs({
+            sync: true,
+            key: 'key1'
+        });
+        console.log(that.token)
+        $api.get(
+          $config.qiandzhuangt, {
+             userid:that.token
+          },
+          function(res) {
+            console.log(res.code)
+            that.qian=res.code
+          }
+        )
+      },
+      methods: {
+          returns(){
+            api.sendEvent({
+                name: 'myEventhh',
+                extra: {
+                    key1: 's'
+                }
+            });
+            api.historyBack({
+                frameName: 'detail'
+            }, function(ret, err) {
+                    api.closeWin();
+            });
+          },
+          qiand(){//签到
+            if(that.token==""){
+              $api.toast("请登录", 500 )
+              return false
+            }
+            $api.post(
+              $config.qiand, {
+                 userid:that.token
+              },
+              function(res) {
+                if(res.code==1){
+                    $api.toast( res.msg+",今日签到获取书币"+res.data.score, 500 )
+                }else if(res.code==2){
+                    $api.toast( res.msg, 500 )
+                }else if(res.code==3){
+                    $api.toast( res.msg, 500 )
+                }else if(res.code==4){
+                    $api.toast( res.msg, 500 )
+                }
+              }
+            )
+          }
+      }
+    })
+  };
+
+</script>
+
+</html>

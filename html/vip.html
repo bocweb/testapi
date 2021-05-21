@@ -1,0 +1,185 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport"
+    content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+  <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+  <title>首页</title>
+  <script type="text/javascript" src="../script/flexible.js"></script>
+  <link rel="stylesheet" type="text/css" href="../css/api.css" />
+  <link rel="stylesheet" type="text/css" href="../css/vip.css" />
+</head>
+
+<body>
+  <div class="home" id="app"  v-cloak>
+    <div class="container">
+      <div class='top'  @click='returns'>
+          <img src='../image/icon_13.png'>
+          <span>年费VIP</span>
+      </div>
+       <image class='vips' src='../image/vip111s.png'></image>
+      <div class='btn'>
+          <div  @click='pingg()'>年费VIP购买</div>
+          <!-- <div @click='zhif'>支付宝支付</div>
+          <div  @click='weixdiaoq'>微信支付</div> -->
+      </div>
+      <div class='content'>*书币属于虚拟商品，充值后无法退款，请理解</div>
+      <div class='content'>*有任何问题请于工作人员联系<span>（咨询时请提供ID：79977）</span></div>
+      <div class='content'>*联系电话：0571-85260960</div>
+      <div class='content'>*工作时间：9:00-17:30</div>
+  </div>
+  </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/jquery-3.2.0.min.js"></script>
+<script type="text/javascript" src="../script/vue.min.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript" src="../script/config.js"></script>
+<script type="text/javascript" src="../script/swiper.min.js"></script>
+<script type="text/javascript">
+  apiready = function () {
+    app = new Vue({
+      el: '#app',
+      data: {
+          tokeny:"",
+      },
+      created: function () {
+          that = this
+
+      },
+      mounted: function () {
+        that.tokeny=api.getPrefs({
+            sync: true,
+            key: 'key1y'
+        });
+        api.addEventListener({
+            name: 'keyback'
+        }, function(ret, err) {
+          api.sendEvent({
+              name: 'myEventhh',
+              extra: {
+                  key1: 's'
+              }
+          });
+          api.historyBack({
+              frameName: 'detail'
+          }, function(ret, err) {
+              if (!ret.status) {
+                  api.closeWin();
+              }
+          });
+        });
+      },
+      methods: {
+        pingg(){
+          console.log($api.getStorage("key"))
+          $api.showProgress();
+          $api.get(
+            $config.appleid, {
+                id:5,
+                userid:$api.getStorage("key")==undefined?that.tokeny:$api.getStorage("key").id,
+            },
+            function(responseus) {
+              console.log(responseus,"s")
+              var iap = api.require('iap');
+              iap.purchase({
+                  productId: 'com.yykj1168.sezs3s'
+              }, function(ret, err) {
+                    console.log(JSON.stringify(ret));
+                    $api.get(
+                      $config.apple, {
+                          order_num:responseus.order_num,
+                          receipt:ret.receipt,
+                          state:ret.state,
+                          productId:ret.productId,
+                          transactionId:ret.transactionId,
+                      },
+                      function(response) {
+                        console.log(response,"s")
+                        api.hideProgress();
+                        $api.toast( response.msg, 500 )
+                      }
+                    )
+              });
+            }
+          )
+
+        },
+        returns(){
+          api.sendEvent({
+              name: 'myEventhh',
+              extra: {
+                  key1: 's'
+              }
+          });
+          api.historyBack({
+              frameName: 'detail'
+          }, function(ret, err) {
+              if (!ret.status) {
+                  api.closeWin();
+              }
+          });
+          setTimeout(function(){
+            window.location.href
+          },500)
+        },
+        zhif(){//支付宝支付
+          api.openWin({
+            name: 'login',
+            url: "https://shuyueyun.cn/admin/pay/alipayAppleH5?id="+7+"&userid="+$api.getStorage("key").id
+          });
+          // $api.post(
+          //   $config.zhifub, {
+          //     id: 7,
+          //     userid:$api.getStorage("key").id
+          //   },
+          //   function(res) {
+          //     console.log(JSON.stringify(res))
+          //     var aliPayPlus = api.require('aliPayPlus');
+          //     aliPayPlus.payOrder({
+          //         orderInfo: res.data
+          //         }, function(ret, err) {
+          //     });
+          //   }
+          // )
+        },
+        weixdiaoq(){//微信支付
+          api.openWin({
+            name: 'login',
+            url:"http://shuyueyun.cn/admin/pay/wechatAppleH5?id="+7+"&userid="+$api.getStorage("key").id
+          });
+          // $api.post(
+          //   $config.weixs, {
+          //     id: 7,
+          //     userid:$api.getStorage("key").id
+          //   },
+          //   function(res) {
+          //     console.log(JSON.stringify(res))
+          //     if(res.code==1){
+          //       var wxPay  = api.require('wxPay');
+          //         wxPay.payOrder({
+          //             apiKey:res.data.appid,
+          //             orderId: res.data.prepayid,
+          //             mchId: res.data.partnerid,
+          //             nonceStr: res.data.noncestr,//1
+          //             timeStamp: res.data.timestamp,//1
+          //             package: "Sign=WXPay",//1
+          //             sign: res.data.sign//1
+          //         }, function(ret, err) {
+          //
+          //         });
+          //     }
+          //
+          //
+          //   }
+          // )
+        },
+      }
+    })
+  };
+
+</script>
+
+</html>

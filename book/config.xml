@@ -1,0 +1,51 @@
+ <widget id="A6023018747556"  version="0.0.1">
+    <name>腾阅读书</name>
+    <description>
+        Example For APICloud.
+    </description>
+    <author email="developer@apicloud.com" href="http://www.apicloud.com">
+        Developer
+    </author>
+    <content src="app.json" />
+    <content src="index.html" />
+    <access origin="*" />
+    <preference name="pageBounce" value="false"/>
+	<preference name="appBackground" value="rgba(0,0,0,0.0)"/>
+	<preference name="windowBackground" value="rgba(0,0,0,0.0)"/>
+	<preference name="frameBackgroundColor" value="rgba(0,0,0,0.0)"/>
+	<preference name="hScrollBarEnabled" value="false"/>
+	<preference name="vScrollBarEnabled" value="false"/>
+	<preference name="autoLaunch" value="true"/>
+	<preference name="fullScreen" value="false"/>
+	<preference name="autoUpdate" value="true" />
+	<preference name="smartUpdate" value="true" />
+	<preference name="debug" value="false"/>
+	<preference name="statusBarAppearance" value="true"/>
+	<permission name="readPhoneState" />
+	<permission name="camera" />
+	<permission name="record" />  <preference name="querySchemes" value="mqq,mqqapi"/>
+	<permission name="location" />
+	<permission name="fileSystem" />
+	<permission name="internet" />
+	<permission name="bootCompleted" />
+	<permission name="hardware" />
+
+  <feature name="QQPlus">
+    <param name="urlScheme" value="tencent101841439" />
+    <param name="apiKey" value="101841439" />
+ </feature>
+ <!-- <feature name="wxPay">
+  <param name="urlScheme" value="wx5e9f078261cc3d15"/>
+  <param name="apiKey" value="wx5e9f078261cc3d15"/>
+  <param name="apiSecret" value="a76b748e7b477fd2ffb4076233b4498e"/>
+</feature> -->
+ <feature name="ajpush">
+        <param name="app_key" value="556c081c9d6348eb9aa1cb15" />
+        <param name="channel" value="cffec86d84e9aeeb6f5588b4" />
+    </feature>
+  <feature name="wx">
+    <param name="urlScheme" value="wx5e9f078261cc3d15"/>
+    <param name="apiKey" value="wx5e9f078261cc3d15"/>
+    <param name="apiSecret" value="a76b748e7b477fd2ffb4076233b4498e"/>
+  </feature>
+</widget>

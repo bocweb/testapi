@@ -1,0 +1,43 @@
+.container{
+        flex-wrap: wrap;
+    }
+    .top{
+        width: 100%;
+        padding: 20px 20px;
+        display: flex;
+        margin-top: 10px;
+        justify-content: space-between;
+        box-sizing: border-box;
+    }
+    .top img{
+        width: 15px;
+        height: 25px;
+    }
+    .top div{
+        width: 100%;
+        line-height: 30px;
+        text-align: center;
+        margin-left: -30px;
+        font-size: 15px;
+    }
+    .top .lieb{
+        width: 25px;
+        height: 25px;
+    }
+    .bot_li_content{
+      padding: 0 10px;
+      box-sizing: border-box;
+      display: flex;
+      margin-top: 10px;
+    }
+    .bot_li_content img{
+      width: 70px;
+      height: 100px;
+      margin-right: 10px;
+    }
+    .bot_li_content div div{
+      font-size: 15px;
+    }
+    .bot_li_content div div:nth-child(2){
+      margin-top: 15px;
+    }
